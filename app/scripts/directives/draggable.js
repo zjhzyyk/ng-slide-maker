@@ -1,28 +1,32 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('draggable', ['$document', 'insertItem', function ($document, insertItem) {
-    return {
-      restrict: 'C',
-      link: function postLink(scope, element, attrs) {
-      	element.css({
-					position: 'relative',
-					cursor: 'pointer'
-				});
+  .directive('draggable', ['$document', function ($document) {
+    var startX=0, startY=0, x = 0, y = 0;
+		return function(scope, element, attr) {
+			element.css({
+				position: 'relative',
+				border: '1px solid red',
+				backgroundColor: 'lightgrey',
+				cursor: 'pointer'
+			});
+			element.bind('mousedown', function(event) {
+				startX = event.screenX - x;
+				startY = event.screenY - y;
 				$document.bind('mousemove', mousemove);
-				$document.bind('mousedown', mousedown);
-				function mousemove(event) {
-					var y = event.screenY - insertItem.startY;
-					var x = event.screenX - insertItem.startX;
-					element.css({
-					top: y + 'px',
-					left: x + 'px'
-					});
-				}
-				function mousedown() {
-					$document.unbind('mousemove', mousemove);
-					$document.unbind('mousedown', mousedown);
-				}
-      }
-    };
+				$document.bind('mouseup', mouseup);
+			});
+			function mousemove(event) {
+				y = event.screenY - startY;
+				x = event.screenX - startX;
+				element.css({
+				top: y + 'px',
+				left: x + 'px'
+				});
+			}
+			function mouseup() {
+				$document.unbind('mousemove', mousemove);
+				$document.unbind('mouseup', mouseup);
+			}
+		}
   }]);
