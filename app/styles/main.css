@@ -1,0 +1,12 @@
+/* Will be compiled down to a single stylesheet with your sass files */
+body,html {
+	height:100%;
+}
+
+.sidemenu {
+	width:20%;
+	height: 100%;
+	display: block;
+	background: grey;
+	float: left;
+}

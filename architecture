@@ -1,0 +1,25 @@
+model:
+	presentation: 
+		all slides,
+		cur slide index,
+		canvas
+
+	slide:
+		all components, such as textbox, image
+
+	canvas:
+		background
+
+view:
+	directives:
+		draggable
+		slide
+		components
+		maybe also canvas
+		maybe sidemenu, (accordion?)
+
+controller
+	InsertBtnCtrl
+
+service(injectables):
+	generator
