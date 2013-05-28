@@ -3,9 +3,17 @@
 angular.module('slidesGeneratorApp')
   .controller('InsertBtnCtrl', ['$scope', function ($scope) {
     $scope.items = [
-	    "frame",
-	    "textbox"
+	    {
+	    	name:"slide",
+	    	click:function(){
+	    		$scope.$eval("addSlide()");
+	    	}
+	   	},
+	    {
+	    	name:"textbox",
+	    	click:function(){
+
+	    	}
+	    }
 	  ];
-	  $scope.click = function(event, item) {
-	  };
   }]);

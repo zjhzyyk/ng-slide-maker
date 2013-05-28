@@ -3,6 +3,7 @@ model:
 		all slides,
 		cur slide index,
 		canvas
+		generator
 
 	slide:
 		all components, such as textbox, image
@@ -20,6 +21,3 @@ view:
 
 controller
 	InsertBtnCtrl
-
-service(injectables):
-	generator

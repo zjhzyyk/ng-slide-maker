@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="slidesGeneratorApp">
+  <body ng-app="slidesGeneratorApp" ng-controller="MainCtrl">
     <!--[if lt IE 7]>
       <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
     <![endif]-->
@@ -27,7 +27,7 @@
 
     <!-- Add your site or application content here -->
 
-    <div class="navbar navbar-inverse navbar-static-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <a class="brand" href="#/">slidegen</a>
         <ul class="nav">
@@ -35,12 +35,12 @@
           <li class="dropdown" ng-controller="InsertBtnCtrl">
             <a class="dropdown-toggle" href="#">insert</a>
             <ul class="dropdown-menu">
-              <li ng-repeat="choice in items">
-                <a ng-click="click($event, choice)">{{choice}}</a>
+              <li ng-repeat="item in items">
+                <a ng-click="item.click()">{{item.name}}</a>
               </li>
             </ul>
           </li>
-          <li><a href="#">third</a></li>
+          <li><a href="#">view</a></li>
         </ul>
 
         <ul class="nav pull-right">
@@ -50,28 +50,53 @@
     </div>
 
     <div class="sidemenu">
-      <h1>sidemenu</h1>
+      <h1>canvas</h1>
+      <label>color</label>
+      <input type="text" placeholder="e.g. blue" ng-model="canvas.background">
+      {{canvas.background}}
+      <label>gradient</label>
+      <input type="text">
+      <label>image</label>
+      <input type="text">
     </div>
     
+    <input type="button" id="zoomin" value="zoom in">
+    <input type="button" id="zoomout" value="zoom out">
+    <div class="canvas">  
+      <div id="backcolor"></div>
+      <ul id="mainCanvas">
+        <li ng-repeat="slide in slides">
+          <ul class="slide" draggable>
+            <li ng-repeat="component in slide.components">
+              <div ng-class="component.type">{{component.content}}</div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <script type="text/javascript" src="components/jquery/jquery.js"></script>
     <script src="components/angular/angular.js"></script>
     <script src="components/angular-resource/angular-resource.js"></script>
     <script src="components/angular-cookies/angular-cookies.js"></script>
     <script src="components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="components/ui-bootstrap-0.3.0.js"></script>
+    <script src="components/angular-ui-bootstrap-bower/ui-bootstrap.js"></script>
 
     <!-- build:js scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/InsertBtn.js"></script>
     <script src="scripts/directives/canvas.js"></script>
     <script src="scripts/directives/draggable.js"></script>
+    <script src="scripts/directives/slide.js"></script>
+    <script src="scripts/controllers/Main.js"></script>
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
-      var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-      s.parentNode.insertBefore(g,s)}(document,'script'));
+      // var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+      // (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      // g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+      // s.parentNode.insertBefore(g,s)}(document,'script'));
     </script>
   </body>
 </html>
