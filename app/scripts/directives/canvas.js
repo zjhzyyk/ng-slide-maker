@@ -23,6 +23,10 @@ angular.module('slidesGeneratorApp')
           var transform = "scale(" + scope.canvas.scale + ")";
           element.children("#mainCanvas").css("-webkit-transform", transform);
           element.children("#mainCanvas").css("-moz-transform", transform);
+
+          var transform2 = "scale(" + (1/scope.canvas.scale) + ")";
+          element.find(".rec *").css("-webkit-transform", transform2);
+
         });
         element.parent().children("input#zoomout").bind("click", function(){
           console.log("zoomout clicked");
@@ -30,6 +34,9 @@ angular.module('slidesGeneratorApp')
           var transform = "scale(" + scope.canvas.scale + ")";
           element.children("#mainCanvas").css("-webkit-transform", transform);
           element.children("#mainCanvas").css("-moz-transform", transform);
+
+          var transform2 = "scale(" + (1/scope.canvas.scale) + ")";
+          element.find(".rec *").css("-webkit-transform", transform2);
         });
         scope.$watch('canvas.background', function(){
           element.children("#backcolor").css("background-color", scope.canvas.background);

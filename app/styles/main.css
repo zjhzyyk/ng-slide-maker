@@ -41,8 +41,8 @@ body,html {
 }
 
 #mainCanvas {
-	-webkit-transition: -webkit-transform 0.6s linear;
-	-moz-transition: -moz-transform 0.6s linear;
+	-webkit-transition: -webkit-transform 0.5s linear;
+	-moz-transition: -moz-transform 0.5s linear;
 	-webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 }
@@ -70,4 +70,45 @@ input#zoomout {
 
 ul {
 	list-style: none;
+}
+
+.rec {
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	border: 2px blue solid;
+	margin: -8px;
+	position: absolute;
+}
+
+.rec > * {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	border: 2px blue solid;
+	-webkit-transition: -webkit-transform 0.5s linear;
+	-moz-transition: -moz-transform 0.5s linear;
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+}
+
+.rec-tl {
+	left: -7px;
+	top: -7px;
+}
+
+.rec-tr {
+	top: -7px;
+	right: -7px;
+}
+
+.rec-bl {
+	left: -7px;
+	bottom: -7px;
+}
+
+.rec-br {
+	right: -7px;
+	bottom: -7px;
 }

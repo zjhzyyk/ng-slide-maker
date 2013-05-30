@@ -66,11 +66,17 @@
       <div id="backcolor"></div>
       <ul id="mainCanvas">
         <li ng-repeat="slide in slides">
-          <ul class="slide" draggable>
-            <li ng-repeat="component in slide.components">
+          <div class="slide resizable" draggable>
+            <div ng-repeat="component in slide.components">
               <div ng-class="component.type">{{component.content}}</div>
-            </li>
-          </ul>
+            </div>
+            <div class="rec" ng-show="slide.selected">
+              <div class="rec-tl"></div>
+              <div class="rec-tr"></div>
+              <div class="rec-bl"></div>
+              <div class="rec-br"></div>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -89,6 +95,7 @@
     <script src="scripts/directives/draggable.js"></script>
     <script src="scripts/directives/slide.js"></script>
     <script src="scripts/controllers/Main.js"></script>
+    <script src="scripts/directives/resizable.js"></script>
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
