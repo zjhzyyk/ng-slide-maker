@@ -28,6 +28,11 @@ angular.module('slidesGeneratorApp')
 				prey = event.screenY;
 				scope.slide.x = x;
 				scope.slide.y = y;
+				scope.slide.style = {
+					left: x+'px',
+					top: y+'px'
+				};
+				$("body").scope().$digest();
 				element.css({
 				top: y+'px',
 				left: x+'px'

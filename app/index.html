@@ -64,17 +64,21 @@
     <input type="button" id="zoomout" value="zoom out">
     <div class="canvas">  
       <div id="backcolor"></div>
+      <ul id="slideFrames">
+        <li ng-repeat="slide in slides" class="recli" id="{{slide.index}}" ng-style="slide.style">
+          <div class="rec" ng-show="slide.selected">
+            <div class="rec-tl"></div>
+            <div class="rec-tr"></div>
+            <div class="rec-bl"></div>
+            <div class="rec-br"></div>
+          </div>
+        </li>
+      </ul>
       <ul id="mainCanvas">
         <li ng-repeat="slide in slides">
-          <div class="slide resizable" draggable>
+          <div class="slide resizable" id="{{slide.index}}" draggable>
             <div ng-repeat="component in slide.components">
               <div ng-class="component.type">{{component.content}}</div>
-            </div>
-            <div class="rec" ng-show="slide.selected">
-              <div class="rec-tl"></div>
-              <div class="rec-tr"></div>
-              <div class="rec-bl"></div>
-              <div class="rec-br"></div>
             </div>
           </div>
         </li>
@@ -96,6 +100,7 @@
     <script src="scripts/directives/slide.js"></script>
     <script src="scripts/controllers/Main.js"></script>
     <script src="scripts/directives/resizable.js"></script>
+    <script src="scripts/directives/rec.js"></script>
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
