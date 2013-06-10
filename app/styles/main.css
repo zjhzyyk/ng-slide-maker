@@ -54,9 +54,12 @@ ul {
 #mainCanvas {
 	-webkit-transition: -webkit-transform 0.5s linear;
 	-moz-transition: -moz-transform 0.5s linear;
-/*	-webkit-transform-style: preserve-3d;
-	transform-style: preserve-3d;*/
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
 	margin: 0;
+	position: absolute;
+	left: 0;
+	top: 0;
 }
 
 input#zoomin {
@@ -96,8 +99,8 @@ ul {
 
 .recli {
 	position: absolute;
-/*	-webkit-transform-style: preserve-3d;
-	transform-style: preserve-3d;*/
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
 }
 
 .rec > * {

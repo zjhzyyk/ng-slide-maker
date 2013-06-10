@@ -19,30 +19,34 @@ angular.module('slidesGeneratorApp')
 				$document.bind('mouseup', mouseup);
 			});
 			function mousemove(event) {
-				console.log("mousemove");
+				// console.log("mousemove");
+				event.preventDefault();
+        event.stopPropagation();
 				// y = (event.screenY - top)*scope.canvas.scale;
 				// x = (event.screenX - left)*scope.canvas.scale;
-				x = parseFloat(element.css("left")) + (event.screenX-prex)/scope.canvas.scale;
-				y = parseFloat(element.css("top")) + (event.screenY-prey)/scope.canvas.scale;
+				// console.log("eventx:"+event.screenX+" eventy:"+event.screenY);
+				x = parseFloat(element.css("left"));
+				y = parseFloat(element.css("top"));
+				x = isNaN(x) ? 0 : x;
+				y = isNaN(y) ? 0 : y;
+				if (!scope.dragScale) {
+					x += event.screenX-prex;
+					y += event.screenY-prey;
+				}
+				else {
+					x += (event.screenX-prex)/scope.canvas.scale;
+					y += (event.screenY-prey)/scope.canvas.scale;
+				}
 				prex = event.screenX;
 				prey = event.screenY;
-				scope.slide.x = x;
-				scope.slide.y = y;
-				scope.slide.style = {
-					left: x+'px',
-					top: y+'px'
-				};
-				$("body").scope().$digest();
 				element.css({
 				top: y+'px',
 				left: x+'px'
 				});
-				// element.css("top", y+"px");
-				// element.css("left", x+"px");
-				// element.css("margin", "5px");
-				// element.css("margin", "0");
 			}
 			function mouseup() {
+				event.preventDefault();
+        event.stopPropagation();
 				$document.unbind('mousemove', mousemove);
 				$document.unbind('mouseup', mouseup);
 			}

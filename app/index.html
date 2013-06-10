@@ -74,9 +74,9 @@
           </div>
         </li>
       </ul>
-      <ul id="mainCanvas">
+      <ul id="mainCanvas" draggable>
         <li ng-repeat="slide in slides">
-          <div class="slide resizable" id="{{slide.index}}" draggable>
+          <div class="slide" id="{{slide.index}}" draggable>
             <div ng-repeat="component in slide.components">
               <div ng-class="component.type">{{component.content}}</div>
             </div>
@@ -99,7 +99,6 @@
     <script src="scripts/directives/draggable.js"></script>
     <script src="scripts/directives/slide.js"></script>
     <script src="scripts/controllers/Main.js"></script>
-    <script src="scripts/directives/resizable.js"></script>
     <script src="scripts/directives/rec.js"></script>
     <!-- endbuild -->
 
