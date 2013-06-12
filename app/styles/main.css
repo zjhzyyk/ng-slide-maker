@@ -131,3 +131,11 @@ ul {
 	right: -7px;
 	bottom: -7px;
 }
+
+.point{
+	position: fixed;
+	background-color: blue;
+	width:6px;
+	height: 6px;
+	z-index: 100000;
+}

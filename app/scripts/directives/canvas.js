@@ -5,7 +5,7 @@ angular.module('slidesGeneratorApp')
     return {
       restrict: 'C',
       link: function postLink(scope, element, attrs) {
-        var ratio = 1.5;
+        var ratio = 1.2;
         var currentSlide=null;
         var position = {
           left: 0,
@@ -20,6 +20,13 @@ angular.module('slidesGeneratorApp')
         };
         var newwidth=0;
         var newheight=0;
+        scope.canvas.width = window.innerWidth-element.offset().left;
+        scope.canvas.height = window.innerHeight-element.offset().top;
+        var ox = scope.canvas.width/2;
+        var oy = scope.canvas.height/2;
+        var translate = "";
+        element.children("#mainCanvas").css("-webkit-transform-origin", ox+'px '+oy+'px');
+        var tx, ty;
         var outterTransform = function (){
           originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
           originarr = originstr.split(" ");
@@ -33,8 +40,9 @@ angular.module('slidesGeneratorApp')
           if (currentSlide!==null) {
             node = element.find(".recli[id="+scope.current.index+"]");
             node.css("-webkit-transition", "all 0.5s linear");
-            position.left = scope.origin.left-(scope.origin.left-scope.current.x)*scope.canvas.scale;
-            position.top = scope.origin.top-(scope.origin.top-scope.current.y)*scope.canvas.scale;
+            // node.css("-webkit-transform", "translate("+(tx)+"px,"+(ty)+"px");
+            position.left = scope.origin.left-(scope.origin.left-scope.current.x)*scope.canvas.scale+tx*scope.canvas.scale;
+            position.top = scope.origin.top-(scope.origin.top-scope.current.y)*scope.canvas.scale+ty*scope.canvas.scale;
             newwidth = scope.current.width*scope.canvas.scale;
             newheight = scope.current.height*scope.canvas.scale;
             //kindly pseudo double-binding
@@ -53,11 +61,61 @@ angular.module('slidesGeneratorApp')
         // scope.canvas.height = element[0].clientHeight;
         scope.canvas.width = element.innerWidth();
         scope.canvas.height = element.innerHeight();
-        element.bind("mousewheel", function(){
+        var off = element.offset();
+        ox = ox + off.left;
+        oy = oy + off.top;
+        var ofx = off.left+scope.mainx;
+        var ofy = off.top+scope.mainy; 
+        var cx,cy,cfx,cfy,ffx,ffy,afx,afy;
+        element[0].onmousewheel = function(event){
+          event.preventDefault();
+          event.stopPropagation();
           console.log("mousewheel");
-        });
+          cx = event.clientX;
+          cy = event.clientY;
+          // console.log(event);
+          off = $("#mainCanvas").offset();
+          cfx = off.left;
+          cfy = off.top;
+          var scale = scope.canvas.scale;
+          if (event.wheelDelta>0) {
+            scale *= ratio;
+            ffx = ratio*(cfx-cx)+cx;
+            ffy = ratio*(cfy-cy)+cy;
+          }
+          else {
+            scale /= ratio;
+            ffx = (cfx-cx)/ratio+cx;
+            ffy = (cfy-cy)/ratio+cy;
+          }
+          afx = scope.canvas.scale*(ofx-ox)+ox;
+          afy = scope.canvas.scale*(ofy-oy)+oy;
+          tx = (ffx-afx)/scope.canvas.scale;
+          ty = (ffy-afy)/scope.canvas.scale;
+          // tx = cfx-cx-ofx+ox+(cx-ox)/scale;
+          // ty = cfy-cy-ofy+oy+(cy-oy)/scale;
+          // console.log("ox:"+ox+" oy:"+oy);
+          // console.log("cx:"+cx+" cy:"+cy);
+          // console.log("ofx:"+ofx+" ofy:"+ofy);
+          // console.log("cfx:"+cfx+" cfy:"+cfy);
+          // console.log("tx:"+tx+" ty:"+ty);
+          // $("#oc").css("left", ox+'px');
+          // $("#oc").css("top", oy+'px');
+          // $("#cc").css("left", cx+'px');
+          // $("#cc").css("top", cy+'px');
+          // $("#of").css("left", ofx+'px');
+          // $("#of").css("top", ofy+'px');
+          // $("#cf").css("left", cfx+'px');
+          // $("#cf").css("top", cfy+'px');
+          translate = "translate("+tx+"px,"+ty+"px)";
+          if (event.wheelDelta > 0) zoomin();
+          else zoomout();
+        };
         element.bind("mousedown", function(event){
           console.log("mousedown captured in canvas.js");
+          // $("body").scope().current.selected = false;
+          // $("body").scope().current = scope.canvas;
+          // $("body").scope().current.selected = true;
           element.children("#mainCanvas").trigger("mousedown");
           scope.dragScale = false;
           $document.bind('mousemove', mousemove);
@@ -81,21 +139,27 @@ angular.module('slidesGeneratorApp')
           scope.dragScale = true;
         }
         element.parent().children("input#zoomin").bind("click", function(){
+          zoomin();
+        });
+        element.parent().children("input#zoomout").bind("click", function(){
+          zoomout();
+        });
+        function zoomin() {
           console.log("zoomin clicked");
           scope.canvas.scale *= ratio;
           outterTransform();
-          var transform = "scale(" + scope.canvas.scale + ")";
+          var transform = "scale(" + scope.canvas.scale + ") "+ translate;
           element.children("#mainCanvas").css("-webkit-transform", transform);
-          element.children("#mainCanvas").css("-moz-transform", transform);
-        });
-        element.parent().children("input#zoomout").bind("click", function(){
+          element.children("#mainCanvas").css("-moz-transform", transform);     
+        };
+        function zoomout(){
           console.log("zoomout clicked");
           scope.canvas.scale /= ratio;
           outterTransform();
-          var transform = "scale(" + scope.canvas.scale + ")";
+          var transform = "scale(" + scope.canvas.scale + ") "+translate;
           element.children("#mainCanvas").css("-webkit-transform", transform);
           element.children("#mainCanvas").css("-moz-transform", transform);
-        });
+        }
         scope.$watch('canvas.background', function(){
           element.children("#backcolor").css("background-color", scope.canvas.background);
         });

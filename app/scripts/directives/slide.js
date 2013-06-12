@@ -29,14 +29,16 @@ angular.module('slidesGeneratorApp')
           $document.bind('mousemove', mousemove);
           $document.bind('mouseup', mouseup);
         });
-        var position = element.position();
+        var offset = element.offset();
         function select(){
           $("body").scope().current.selected = false;
           $("body").scope().current = scope.slides[index];
           $("body").scope().current.selected = true;
-          position = element.position();
-          scope.slide.style.left = position.left+'px';
-          scope.slide.style.top = position.top+'px';
+          offset = element.offset();
+          var x = offset.left-$("#slideFrames").offset().left;
+          var y = offset.top-$("#slideFrames").offset().top;
+          scope.slide.style.left = x+'px';
+          scope.slide.style.top = y+'px';
           scope.slide.style.width = scope.slide.width*scope.canvas.scale;
           scope.slide.style.height = scope.slide.height*scope.canvas.scale;
           $("body").scope().$digest();
@@ -52,6 +54,9 @@ angular.module('slidesGeneratorApp')
           scope.slide.x = parseFloat(element.css("left"));
           scope.slide.y = parseFloat(element.css("top"));
           // console.log("slide "+index+" new x:"+x+" y:"+y);
+          offset = element.offset();
+          x = offset.left-$("#slideFrames").offset().left;
+          y = offset.top-$("#slideFrames").offset().top;
           scope.slide.style = {
             left: x+'px',
             top: y+'px',
@@ -78,9 +83,10 @@ angular.module('slidesGeneratorApp')
         scope.$watch("slide.y", function(){
           element.css("top", scope.slide.y+'px');
         });
-        
-        scope.slide.style.left = position.left+'px';
-        scope.slide.style.top = position.top+'px';
+        var left = offset.left-$("#slideFrames").offset().left;
+        var top = offset.top-$("#slideFrames").offset().top;
+        scope.slide.style.left = left+'px';
+        scope.slide.style.top = top+'px';
       }
     };
   }]);

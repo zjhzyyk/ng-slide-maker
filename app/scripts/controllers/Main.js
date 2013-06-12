@@ -35,6 +35,8 @@ angular.module('slidesGeneratorApp')
       // top: 0
       background:"",
       selected: true,
+      mx: 0,
+      my: 0,
       scale: 1
     };
     $scope.current = $scope.canvas;
