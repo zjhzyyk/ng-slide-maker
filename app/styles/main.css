@@ -60,6 +60,7 @@ ul {
 	position: absolute;
 	left: 0;
 	top: 0;
+	display: block;
 }
 
 input#zoomin {

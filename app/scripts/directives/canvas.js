@@ -16,6 +16,8 @@ angular.module('slidesGeneratorApp')
         var originarr=[];
         var removeTransition = function (){
           node.css("-webkit-transition", "");
+          var fsoff = $(".slide[id=0]").offset();
+          console.log("fsfx:"+fsoff.left+" fsfy:"+fsoff.top);
           node.unbind("transitionend", removeTransition);
         };
         var newwidth=0;
@@ -26,6 +28,9 @@ angular.module('slidesGeneratorApp')
         var oy = scope.canvas.height/2;
         var translate = "";
         element.children("#mainCanvas").css("-webkit-transform-origin", ox+'px '+oy+'px');
+        // element.children("#mainCanvas").css("width", scope.canvas.width+'px');
+        // element.children("#mainCanvas").css("height", scope.canvas.height+'px');
+        // element.children("#mainCanvas").css("background-color", "yellow");
         var tx, ty;
         var outterTransform = function (){
           originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
@@ -61,22 +66,26 @@ angular.module('slidesGeneratorApp')
         // scope.canvas.height = element[0].clientHeight;
         scope.canvas.width = element.innerWidth();
         scope.canvas.height = element.innerHeight();
-        var off = element.offset();
-        ox = ox + off.left;
-        oy = oy + off.top;
-        var ofx = off.left+scope.mainx;
-        var ofy = off.top+scope.mainy; 
+        var off;
+        var ofx;
+        var ofy;
         var cx,cy,cfx,cfy,ffx,ffy,afx,afy;
         element[0].onmousewheel = function(event){
           event.preventDefault();
           event.stopPropagation();
           console.log("mousewheel");
+          off = element.offset();
+          ofx = off.left+scope.mainx;
+          ofy = off.top+scope.mainy;
+          ox = scope.canvas.width/2 + ofx;
+          oy = scope.canvas.height/2+ofy;
           cx = event.clientX;
           cy = event.clientY;
           // console.log(event);
           off = $("#mainCanvas").offset();
           cfx = off.left;
           cfy = off.top;
+
           var scale = scope.canvas.scale;
           if (event.wheelDelta>0) {
             scale *= ratio;
@@ -88,25 +97,18 @@ angular.module('slidesGeneratorApp')
             ffx = (cfx-cx)/ratio+cx;
             ffy = (cfy-cy)/ratio+cy;
           }
-          afx = scope.canvas.scale*(ofx-ox)+ox;
-          afy = scope.canvas.scale*(ofy-oy)+oy;
-          tx = (ffx-afx)/scope.canvas.scale;
-          ty = (ffy-afy)/scope.canvas.scale;
-          // tx = cfx-cx-ofx+ox+(cx-ox)/scale;
-          // ty = cfy-cy-ofy+oy+(cy-oy)/scale;
-          // console.log("ox:"+ox+" oy:"+oy);
-          // console.log("cx:"+cx+" cy:"+cy);
-          // console.log("ofx:"+ofx+" ofy:"+ofy);
-          // console.log("cfx:"+cfx+" cfy:"+cfy);
-          // console.log("tx:"+tx+" ty:"+ty);
-          // $("#oc").css("left", ox+'px');
-          // $("#oc").css("top", oy+'px');
-          // $("#cc").css("left", cx+'px');
-          // $("#cc").css("top", cy+'px');
-          // $("#of").css("left", ofx+'px');
-          // $("#of").css("top", ofy+'px');
-          // $("#cf").css("left", cfx+'px');
-          // $("#cf").css("top", cfy+'px');
+          afx = scale*(ofx-ox)+ox;
+          afy = scale*(ofy-oy)+oy;
+          tx = (ffx-afx)/scale;
+          ty = (ffy-afy)/scale;
+          console.log("cfx:"+cfx+" cfy:"+cfy);
+          console.log("cx:"+cx+" cy:"+cy);
+          console.log("ox:"+ox+" oy:"+oy);
+          console.log("ofx:"+ofx+" ofy:"+ofy);
+          console.log("afx:"+afx+" afy:"+afy);
+          console.log("ffx:"+ffx+" ffy:"+ffy);
+          var soff = $(".slide[id=0]").offset();
+          console.log("osfx:"+soff.left+" osfy:"+soff.top);
           translate = "translate("+tx+"px,"+ty+"px)";
           if (event.wheelDelta > 0) zoomin();
           else zoomout();
