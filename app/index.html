@@ -78,7 +78,7 @@
         <li ng-repeat="slide in slides">
           <div class="slide" id="{{slide.index}}" draggable>
             <div ng-repeat="component in slide.components">
-              <div ng-class="component.type">{{component.content}}</div>
+              <div class="{{component.type}}">{{component.content}}</div>
             </div>
           </div>
         </li>
@@ -100,6 +100,7 @@
     <script src="scripts/directives/slide.js"></script>
     <script src="scripts/controllers/Main.js"></script>
     <script src="scripts/directives/rec.js"></script>
+    <script src="scripts/directives/textbox.js"></script>
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

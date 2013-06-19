@@ -87,6 +87,8 @@ angular.module('slidesGeneratorApp')
         var top = offset.top-$("#slideFrames").offset().top;
         scope.slide.style.left = left+'px';
         scope.slide.style.top = top+'px';
+        function f(){scope.$emit("newSlide");}
+        setTimeout(f, 0);
       }
     };
   }]);

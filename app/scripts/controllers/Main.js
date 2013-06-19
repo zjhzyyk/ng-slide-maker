@@ -16,6 +16,21 @@ angular.module('slidesGeneratorApp')
       this.components = [];
       this.style={};
     };
+    Slide.prototype.addTextBox = function (){
+      console.log("add textbox in slide "+this.index);
+      this.components.push({
+        type: "textbox",
+        content: ""
+      });
+    };
+    Slide.prototype.getLastTextBox = function(){
+      var ret = null;
+      var cn = this.components.length;
+      for (var i = 0; i<cn; i++) {
+        if (this.components[i].type==="textbox") ret = this.components[i];
+      }
+      return ret;
+    }
     var calcCenterCood = function(item){
     	return {
     		x:$scope.canvas.width/2.0-item.width/2.0,
