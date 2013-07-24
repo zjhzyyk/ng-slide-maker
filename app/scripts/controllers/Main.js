@@ -11,26 +11,71 @@ angular.module('slidesGeneratorApp')
       this.y = 0;
       this.vx = 0;
       this.vy = 0;
-      this.width = 400;
-      this.height = 300;
+      this.width = 600;
+      this.height = 450;
+      this.textnum = 0;
       this.components = [];
       this.style={};
+      this.toolbar = "slide"+this.index+"toolbar";
+      this.current = null;
     };
-    Slide.prototype.addTextBox = function (){
-      console.log("add textbox in slide "+this.index);
-      this.components.push({
-        type: "textbox",
-        content: ""
-      });
-    };
-    Slide.prototype.getLastTextBox = function(){
-      var ret = null;
-      var cn = this.components.length;
-      for (var i = 0; i<cn; i++) {
-        if (this.components[i].type==="textbox") ret = this.components[i];
+    var Component = function(opt){
+      for (var prop in opt) {
+        if (opt.hasOwnProperty(prop)) {
+          this[prop] = opt[prop];
+        }
       }
-      return ret;
-    }
+    };
+
+    Component.prototype.getStyle = function(){
+      return {
+        left: this.x+'px',
+        top: this.y+'px',
+        width: this.width+'px',
+        height: this.height+'px'
+      };
+    };
+    Slide.prototype.addTextBox = function (cx,cy){
+      console.log("add textbox in slide "+this.index);
+      cx = cx || 0;
+      cy = cy || 0;
+      // console.log("cx", cx, "cy", cy);
+      this.components.push(new Component({
+        type: "textbox",
+        id : this.textnum,
+        content: "",
+        x: cx || 0,
+        y: cy || 0,
+        width: 210,
+        height: 20,
+        frameStyle: {
+          left: (cx*$scope.canvas.scale)+"px",
+          top: (cy*$scope.canvas.scale)+"px",
+          width: 0,
+          height: 0,
+          display: "none"
+        },
+        editor: null
+      }));
+      this.current = this.components[this.components.length-1];
+      this.textnum++;
+    };
+    Slide.prototype.getPosStyle = function () {
+      return {
+        left: this.style.left,
+        top: this.style.top
+      };
+    };
+
+    Slide.prototype.getStyle = function (){
+      return {
+        left: this.style.left,
+        top: this.style.top,
+        width: this.width,
+        height: this.height
+      };
+    };
+
     var calcCenterCood = function(item){
     	return {
     		x:$scope.canvas.width/2.0-item.width/2.0,
@@ -86,4 +131,7 @@ angular.module('slidesGeneratorApp')
     $scope.slideNum = function(){
       return $scope.slides.length;
     };
+    $scope.present = function(){
+      $scope.$broadcast("present");
+    }
   }]);

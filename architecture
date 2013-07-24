@@ -21,3 +21,12 @@ view:
 
 controller
 	InsertBtnCtrl
+
+textbox: create as edit mode
+click on textbox in a selected slide -> drag mode
+dbclick on a textbox in a selected slide -> edit mode
+dbclick on a drag mode textbox -> edit mode
+dbclick on a edit mode textbox -> drag mode
+click on a slide -> all textboxes turn into display mode
+click on the canvas -> all textboxes turn into display mode
+if zoomin zoomout -> all textboxes turn into display mode

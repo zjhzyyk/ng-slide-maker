@@ -19,7 +19,7 @@ angular.module('slidesGeneratorApp')
             prex = event.screenX;
             prey = event.screenY;
             ci = index;
-            scope.dragScale = false;
+            // scope.dragScale = false;
             $document.bind('mousemove', mousemove);
             $document.bind('mouseup', mouseup);
           });
@@ -57,7 +57,7 @@ angular.module('slidesGeneratorApp')
           event.stopPropagation();
           $document.unbind('mousemove', mousemove);
           $document.unbind('mouseup', mouseup);
-          scope.dragScale = true;
+          // scope.dragScale = true;
         }
       }
     };

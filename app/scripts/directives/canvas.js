@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('canvas', ['$document', function ($document) {
+  .directive('canvas', ['$document', '$window', function ($document, $window) {
     return {
       restrict: 'C',
       link: function postLink(scope, element, attrs) {
@@ -78,6 +78,7 @@ angular.module('slidesGeneratorApp')
           zoomToPoint(event.wheelDelta, event.clientX, event.clientY);
         }
         function zoomToPoint(d,x,y) {
+          scope.$broadcast("unselect-textbox");
           off = element.offset();
           ofx = off.left+scope.mainx;
           ofy = off.top+scope.mainy;
@@ -105,14 +106,6 @@ angular.module('slidesGeneratorApp')
           afy = scale*(ofy-oy)+oy;
           tx = (ffx-afx)/scale;
           ty = (ffy-afy)/scale;
-          // console.log("cfx:"+cfx+" cfy:"+cfy);
-          // console.log("cx:"+cx+" cy:"+cy);
-          // console.log("ox:"+ox+" oy:"+oy);
-          // console.log("ofx:"+ofx+" ofy:"+ofy);
-          // console.log("afx:"+afx+" afy:"+afy);
-          // console.log("ffx:"+ffx+" ffy:"+ffy);
-          // var soff = $(".slide[id=0]").offset();
-          // console.log("osfx:"+soff.left+" osfy:"+soff.top);
           translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
           if (d > 0) zoomin();
           else zoomout();
@@ -167,9 +160,6 @@ angular.module('slidesGeneratorApp')
           var transform = "scale(" + scope.canvas.scale + ") "+ translate;
           // console.log(transform);
           document.getElementById("mainCanvas").style.webkitTransform = transform;
-          // console.log(document.getElementById("mainCanvas").style);
-          // $("#mainCanvas").css("-webkit-transform", transform);
-          // $("#mainCanvas").css("-moz-transform", transform);
           $("#mainCanvas").bind("transitionend", endOfZoomIn);
         }
         function endOfZoomIn() {
@@ -199,9 +189,11 @@ angular.module('slidesGeneratorApp')
         scope.$watch('mainx', function(){
           // console.log("in watch f");
           $('#slideFrames').css("left", scope.mainx+'px');
+          $('#textFrames').css("left", scope.mainx+'px');
         });
         scope.$watch('mainy', function(){
           $('#slideFrames').css("top", scope.mainy+'px');
+          $('#textFrames').css("top", scope.mainy+'px');
         });
         function moveto(i){
           if (i<0) return;
@@ -220,13 +212,8 @@ angular.module('slidesGeneratorApp')
           var r2 = (scope.canvas.height-reserve) * hr / parseFloat(scope.slides[i].style.height);
           var r = Math.min(r1,r2);
           scope.canvas.scale *= r;
-
           afx = scope.canvas.scale*(ofx-ox)+ox;
           afy = scope.canvas.scale*(ofy-oy)+oy;
-          // var xf = (scope.canvas.width-r*parseFloat(scope.slides[i].style.width))/2;
-          // var yf = (scope.canvas.height-r*parseFloat(scope.slides[i].style.height))/2;
-          // ffx = off.left-(scope.canvas.scale-1)*xf;
-          // ffy = off.top-(scope.canvas.scale-1)*yf;
           ffx = off.left + (scope.canvas.width-r*parseFloat(scope.slides[i].style.width))/2;
           ffy = off.top + (scope.canvas.height-reserve-r*parseFloat(scope.slides[i].style.height))/2 + reserve;
           ffx -= scope.current.x * scope.canvas.scale;
@@ -240,6 +227,16 @@ angular.module('slidesGeneratorApp')
           moveto(scope.current.index);
         }
         scope.$on("newSlide", moveToCurrent);
+        scope.$on("unselect-all-text", function(){
+          scope.$broadcast("unselect-textbox");
+        });
+        scope.$on("present", function(){
+          var present = $window.open();
+          present.document.write($('#final')[0].innerHTML);
+          console.log($('#final')[0].innerHTML);
+          $(present.document).ready(function(){
+          });
+        });
       }
     };
   }]);

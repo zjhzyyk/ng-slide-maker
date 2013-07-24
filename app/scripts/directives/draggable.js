@@ -44,7 +44,7 @@ angular.module('slidesGeneratorApp')
 				left: x+'px'
 				});
 			}
-			function mouseup() {
+			function mouseup(event) {
 				event.preventDefault();
         event.stopPropagation();
 				$document.unbind('mousemove', mousemove);
