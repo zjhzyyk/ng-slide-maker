@@ -9,7 +9,14 @@ angular.module('slidesGeneratorApp')
   		}
   		else 
   			console.log("no slide selected");
-  	}
+  	};
+  	$scope.addImage = function(){
+  		if ($scope.current!==$scope.canvas) {
+  			$scope.current.addImage();
+  		}
+  		else 
+  			console.log("no slide selected");
+  	};
     $scope.items = [
 	    {
 	    	name:"slide",
@@ -21,6 +28,12 @@ angular.module('slidesGeneratorApp')
 	    	name:"textbox",
 	    	click:function(){
 	    		$scope.$eval("addTextBox()");
+	    	}
+	    },
+	    {
+	    	name:"image",
+	    	click: function(){
+	    		$scope.$eval("addImage()");
 	    	}
 	    }
 	  ];

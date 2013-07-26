@@ -18,10 +18,17 @@ ul {
 	bottom: 0;
 	top: 0;
 	position: absolute;
-	display: block;
+	display: none;
 	background: grey;
 	margin-top: 40px;
 	z-index: 100;
+}
+
+#sidebar {
+	position: absolute;
+	right: 25px;
+	top: 50%;
+	margin-top: -44px;
 }
 
 .canvas {
@@ -33,7 +40,7 @@ ul {
 	bottom: 0;
 	position: absolute;
 	margin-top: 40px;
-	margin-left: 260px;
+	/*margin-left: 260px;*/
 	overflow: hidden;
 	background-color: #fff;
 	/*-webkit-transition: margin 0.5s linear;*/
@@ -64,7 +71,7 @@ ul {
 	/*z-index: auto;*/
 }
 
-input#zoomin {
+/*input#zoomin {
 	position: fixed;
 	left: 300px;
 	top: 60px;
@@ -76,7 +83,7 @@ input#zoomout {
 	left: 400px;
 	top: 60px;
 	z-index: 100;
-}
+}*/
 
 .slide {
 	position: absolute;
@@ -155,7 +162,7 @@ textarea {
 	margin: 0;
 }
 
-#final {
+#presentation {
 	display: none;
 }
 

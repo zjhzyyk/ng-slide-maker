@@ -60,6 +60,20 @@ angular.module('slidesGeneratorApp')
       this.current = this.components[this.components.length-1];
       this.textnum++;
     };
+    Slide.prototype.addImage = function() {
+      console.log("add image in slide "+this.index);
+      this.components.push(new Component({
+        type: "image",
+        content: "",
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        frameStyle: {
+          
+        }
+      }));
+    };
     Slide.prototype.getPosStyle = function () {
       return {
         left: this.style.left,
@@ -69,8 +83,8 @@ angular.module('slidesGeneratorApp')
 
     Slide.prototype.getStyle = function (){
       return {
-        left: this.style.left,
-        top: this.style.top,
+        left: this.x + 'px',
+        top: this.y + 'px',
         width: this.width,
         height: this.height
       };

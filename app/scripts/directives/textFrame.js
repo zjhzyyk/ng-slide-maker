@@ -90,7 +90,7 @@ angular.module('slidesGeneratorApp')
         });
         scope.$on("unselect-textbox", function(){
           scope.component.frameStyle.display = "none";
-          $("body").scope().$digest();
+          $("body").scope().$$phase || $("body").scope().$digest();
           $(scope.component.editor.composer.iframe).css("width", scope.component.width+'px');
         });
       }

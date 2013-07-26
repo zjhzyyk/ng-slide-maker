@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title></title>
+    <title>slides generator</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -62,8 +62,6 @@
       <input type="text">
     </div>
     
-    <input type="button" id="zoomin" value="zoom in">
-    <input type="button" id="zoomout" value="zoom out">
     <div class="canvas">  
       <div id="backcolor"></div>
       <ul id="slideFrames">
@@ -104,13 +102,106 @@
           </div>
         </div>
       </div>
+      <div id="sidebar" class="btn-group btn-group-vertical">
+        <button class="btn" id="gohome"><i class="icon-home"></i></button>
+        <button class="btn" id="zoomin"><i class="icon-zoom-in"></i></button>
+        <button class="btn" id="zoomout"><i class="icon-zoom-out"></i></button>
+      </div>
     </div>
 
-    <div id="final">
-      <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute;">
-        <div ng-repeat="component in slide.components" class="finalComponent" ng-style="component.getStyle()">
+    <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;">
+      <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute; border: 1px black solid;" class="pslide">
+        <div ng-repeat="component in slide.components" class="finalComponent" ng-style="component.getStyle()" style="position: absolute;">
         </div>
       </div>
+      <script type="text/javascript">
+        function presentation(){
+          var present = document.getElementById("presentation");
+          var slidesElements = document.getElementsByClassName("pslide");
+          var slidesNum = slidesElements.length;
+          var i = 0;
+          var slides = [];
+          var Slide = function(x,y,w,h){
+            this.x = x;
+            this.y = y;
+            this.width = w;
+            this.height = h;
+          };
+          var cur = 0;
+          var canvas = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            scale: 1
+          };
+          present.style.webkitTransformOrigin = canvas.width/2 + 'px ' + canvas.height/2 + 'px';
+          var translate="";
+          for (;i<slidesNum; i++) {
+            slides.push(new Slide(
+              parseFloat(slidesElements[i].style.left),
+              parseFloat(slidesElements[i].style.top),
+              parseFloat(slidesElements[i].style.width),
+              parseFloat(slidesElements[i].style.height)
+              )
+            );
+          }
+          document.onkeydown = function(e) {
+            if (e.keyCode == 39 ||
+                e.keyCode == 13) {
+              next();
+            } else if (e.keyCode == 37) {
+              prev();
+            }
+          };
+          document.onclick = function(e) {
+            next();
+          }
+          function next(){
+            if (cur+1<slidesNum) {
+              moveto(cur+1);
+              cur++;
+            }
+          }
+          function prev(){
+            if(cur-1>=0) {
+              moveto(cur-1);
+              cur--;
+            }
+          }
+          function moveto(i){
+            if (i<0 || i>=slidesNum) return;
+            console.log("in moveto "+i);
+            var ofx = present.getBoundingClientRect().left,
+            ofy = present.getBoundingClientRect().top,
+            ox = canvas.width/2 +ofx,
+            oy = canvas.height/2+ofy;
+            var wr = 0.85;
+            var hr = 0.85;
+            var r1 = canvas.width * wr / slides[i].width / canvas.scale;
+            var r2 = canvas.height * hr / slides[i].height / canvas.scale;
+            var r = Math.min(r1,r2),
+            ffx = ofx + (canvas.width-r*slides[i].width*canvas.scale)/2,
+            ffy = ofy + (canvas.height-r*slides[i].height*canvas.scale)/2;
+            canvas.scale *= r;
+            var afx = canvas.scale*(ofx-ox)+ox,
+            afy = canvas.scale*(ofy-oy)+oy;
+            ffx -= slides[i].x * canvas.scale;
+            ffy -= slides[i].y * canvas.scale;
+            var tx = (ffx-afx)/canvas.scale,
+            ty = (ffy-afy)/canvas.scale;
+            translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
+            zoomin(null, false);
+          }
+          function zoomin(event, change) {
+            //first unbind all zoom events
+            if (change===undefined || change===true || change===null) canvas.scale *= ratio;
+            var transform = "scale(" + canvas.scale + ") "+ translate;
+            present.style.webkitTransform = transform;
+            //after zooming finishes, bind back all zoom events
+          }
+          moveto(0);
+        };
+        presentation();
+      </script>
     </div>
 
     <script type="text/javascript" src="components/jquery/jquery.js"></script>

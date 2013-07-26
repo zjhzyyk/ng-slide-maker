@@ -2,7 +2,7 @@
 
 angular.module('slidesGeneratorApp')
   .directive('slide', ['$document', function ($document) {
-    var move = false;
+    var move = false, movein = false;
     return {
       restrict: 'C',
       link: function postLink(scope, element, attrs) {
@@ -15,35 +15,36 @@ angular.module('slidesGeneratorApp')
         	height: scope.slide.height + "px",
         	border: "1px solid black"
         });
-        element.children(".toolbar").click(function(e){
-          e.preventDefault();
-          e.stopPropagation();
-        });
-        // console.log(scope.slide.toolbar);
-        // console.log(element.children("#"+scope.slide.toolbar));
-        // console.log(element.html());
-        element.bind("click", function(event){
-          //show selected effect
-          console.log("click on slide "+index);
-          // console.log(scope);
-          event.preventDefault();
-          event.stopPropagation();
-          
-          console.log("select current slide");
-          select();
-        });
+        // element.children(".toolbar").click(function(e){
+        //   e.preventDefault();
+        //   e.stopPropagation();
+        // });
+        var afterZoom = function(){
+          console.log("in empty afterZoom");
+        };
+        var unbindZoomend;
         element.mousedown(function(event){
           console.log("select slide "+index);
           event.preventDefault();
           event.stopPropagation();
           move = false;
-          select();
+          if ($("body").scope().current !== scope.slides[index]) {
+            movein = true;
+            afterZoom = function(){
+              console.log("in afterZoom");
+              select();
+              unbindZoomend();
+            };
+            unbindZoomend = scope.$on("zoomend", afterZoom);
+            scope.$emit("moveto", index);
+          }
           $document.bind('mousemove', mousemove);
           $document.bind('mouseup', mouseup);
         });
-        function select(){
+        function select(mode){
           $("body").scope().current.selected = false;
           $("body").scope().current = scope.slides[index];
+          // if (mode==="move") $("body").scope().current.selected = true;
           $("body").scope().current.selected = true;
           offset = element.offset();
           var x = offset.left-$("#slideFrames").offset().left;
@@ -80,14 +81,14 @@ angular.module('slidesGeneratorApp')
         function mouseup(event){
           event.preventDefault();
           event.stopPropagation();
-          console.log("in up move: "+move);
-          if (move===false && scope.current===scope.slide) {
+          if (move===false && $("body").scope().current===scope.slide && movein===false) {
             offset = element.offset();
             var x = (event.clientX-offset.left)/scope.canvas.scale;
             var y = (event.clientY-offset.top)/scope.canvas.scale;
             scope.slide.addTextBox(x, y);
             $("body").scope().$digest();
           }
+          movein = false;
           $document.unbind('mousemove', mousemove);
           $document.unbind('mouseup', mouseup);
         }
@@ -109,7 +110,7 @@ angular.module('slidesGeneratorApp')
         scope.slide.style.left = left+'px';
         scope.slide.style.top = top+'px';
         function f(){scope.$emit("newSlide");}
-        setTimeout(f, 100);
+        setTimeout(f, 0);
       }
     };
   }]);

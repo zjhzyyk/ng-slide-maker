@@ -38,20 +38,20 @@ angular.module('slidesGeneratorApp')
           scope.origin.left = parseFloat(originarr[0]);
           scope.origin.top = parseFloat(originarr[1]);
           // console.log(origin);
-          if (scope.current!==scope.canvas)
-            currentSlide = $(".slide[id="+scope.current.index+"]");
+          if ($("body").scope().current!==scope.canvas)
+            currentSlide = $(".slide[id="+$("body").scope().current.index+"]");
           else
             currentSlide = null;
           if (currentSlide!==null) {
-            node = element.find(".recli[id="+scope.current.index+"]");
+            node = element.find(".recli[id="+$("body").scope().current.index+"]");
             node.css("-webkit-transition", "all 0.5s linear");
             // node.css("-webkit-transform", "translate("+(tx)+"px,"+(ty)+"px");
-            position.left = scope.origin.left-(scope.origin.left-scope.current.x)*scope.canvas.scale+tx*scope.canvas.scale;
-            position.top = scope.origin.top-(scope.origin.top-scope.current.y)*scope.canvas.scale+ty*scope.canvas.scale;
-            newwidth = scope.current.width*scope.canvas.scale;
-            newheight = scope.current.height*scope.canvas.scale;
+            position.left = scope.origin.left-(scope.origin.left-$("body").scope().current.x)*scope.canvas.scale+tx*scope.canvas.scale;
+            position.top = scope.origin.top-(scope.origin.top-$("body").scope().current.y)*scope.canvas.scale+ty*scope.canvas.scale;
+            newwidth = $("body").scope().current.width*scope.canvas.scale;
+            newheight = $("body").scope().current.height*scope.canvas.scale;
             //kindly pseudo double-binding
-            scope.current.style = {
+            $("body").scope().current.style = {
               left: position.left+'px',
               top: position.top+'px',
               width: newwidth+'px',
@@ -64,8 +64,8 @@ angular.module('slidesGeneratorApp')
         }
         // scope.canvas.width = element[0].clientWidth;
         // scope.canvas.height = element[0].clientHeight;
-        scope.canvas.width = element.innerWidth();
-        scope.canvas.height = element.innerHeight();
+        // scope.canvas.width = element.innerWidth();
+        // scope.canvas.height = element.innerHeight();
         var off;
         var ofx;
         var ofy;
@@ -137,8 +137,8 @@ angular.module('slidesGeneratorApp')
           $document.unbind('mouseup', mouseup);
           scope.dragScale = true;
         }
-        element.parent().children("input#zoomin").bind("click", zoominDefault);
-        element.parent().children("input#zoomout").bind("click", zoomoutDefault);
+        element.parent().children("#zoomin").bind("click", zoominDefault);
+        element.parent().children("#zoomout").bind("click", zoomoutDefault);
         function zoominDefault(event) {
           // event.preventDefault();
           // event.stopPropagation();
@@ -152,7 +152,7 @@ angular.module('slidesGeneratorApp')
           zoomToPoint(-1, off.left+scope.canvas.width/2, off.top+scope.canvas.height/2);
         }
         function zoomin(event, change) {
-          $("input#zoomin").unbind("click", zoominDefault);
+          $("#zoomin").unbind("click", zoominDefault);
           element[0].onmousewheel = function(){};
           
           if (change===undefined || change===true || change===null) scope.canvas.scale *= ratio;
@@ -163,12 +163,13 @@ angular.module('slidesGeneratorApp')
           $("#mainCanvas").bind("transitionend", endOfZoomIn);
         }
         function endOfZoomIn() {
-          $("input#zoomin").bind("click", zoominDefault);
+          $("#zoomin").bind("click", zoominDefault);
           element[0].onmousewheel = mousewheel;
+          scope.$broadcast("zoomend");
           $("#mainCanvas").unbind("transitionend", endOfZoomIn);
         }
         function zoomout(){
-          $("input#zoomout").unbind("click", zoomoutDefault);
+          $("#zoomout").unbind("click", zoomoutDefault);
           element[0].onmousewheel = function(){};
           console.log("zoomout clicked");
           scope.canvas.scale /= ratio;
@@ -179,7 +180,7 @@ angular.module('slidesGeneratorApp')
           $("#mainCanvas").bind("transitionend", endOfZoomOut);
         }
         function endOfZoomOut() {
-          $("input#zoomout").bind("click", zoomoutDefault);
+          $("#zoomout").bind("click", zoomoutDefault);
           element[0].onmousewheel = mousewheel;
           $("#mainCanvas").unbind("transitionend", endOfZoomOut);
         }
@@ -212,30 +213,47 @@ angular.module('slidesGeneratorApp')
           var r2 = (scope.canvas.height-reserve) * hr / parseFloat(scope.slides[i].style.height);
           var r = Math.min(r1,r2);
           scope.canvas.scale *= r;
+          // console.log("r", r, "scale", scope.canvas.scale, "w", scope.canvas.width, "h", scope.canvas.height);
           afx = scope.canvas.scale*(ofx-ox)+ox;
           afy = scope.canvas.scale*(ofy-oy)+oy;
           ffx = off.left + (scope.canvas.width-r*parseFloat(scope.slides[i].style.width))/2;
           ffy = off.top + (scope.canvas.height-reserve-r*parseFloat(scope.slides[i].style.height))/2 + reserve;
-          ffx -= scope.current.x * scope.canvas.scale;
-          ffy -= scope.current.y * scope.canvas.scale;
+          ffx -= $("body").scope().current.x * scope.canvas.scale;
+          ffy -= $("body").scope().current.y * scope.canvas.scale;
           tx = (ffx-afx)/scope.canvas.scale;
           ty = (ffy-afy)/scope.canvas.scale;
           translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
           zoomin(null, false);
         }
         function moveToCurrent(){
-          moveto(scope.current.index);
+          moveto($("body").scope().current.index);
         }
         scope.$on("newSlide", moveToCurrent);
         scope.$on("unselect-all-text", function(){
           scope.$broadcast("unselect-textbox");
         });
         scope.$on("present", function(){
-          var present = $window.open();
-          present.document.write($('#final')[0].innerHTML);
-          console.log($('#final')[0].innerHTML);
-          $(present.document).ready(function(){
-          });
+          var present = $window.open("index.html?presentation=true");
+          present.onload = function(){
+            (present.document.getElementsByTagName("html")[0]).innerHTML = 
+            "<!doctype html>"+
+            "<html>"+
+            "  <head>"+
+            "    <meta charset='utf-8'>"+
+            "    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>"+
+            "    <title>presentation</title>"+
+            "    <meta name='description' content=''>"+
+            "    <meta name='viewport' content='width=device-width'>"+
+            "  </head>"+
+            "  <body style='overflow:hidden;margin:0; padding:0;'>"+
+            $('#presentation')[0].outerHTML+
+            "  </body>"+
+            "</html>";
+            present.presentation();
+          };
+        });
+        scope.$on("moveto", function(e, id){
+          moveto(id);
         });
       }
     };
