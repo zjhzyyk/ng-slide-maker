@@ -16,8 +16,6 @@ angular.module('slidesGeneratorApp')
         var originarr=[];
         var removeTransition = function (){
           node.css("-webkit-transition", "");
-          // var fsoff = $(".slide[id=0]").offset();
-          // console.log("fsfx:"+fsoff.left+" fsfy:"+fsoff.top);
           node.unbind("transitionend", removeTransition);
         };
         var newwidth=0;
@@ -28,9 +26,6 @@ angular.module('slidesGeneratorApp')
         var oy = scope.canvas.height/2;
         var translate = "";
         element.children("#mainCanvas").css("-webkit-transform-origin", ox+'px '+oy+'px');
-        // element.children("#mainCanvas").css("width", scope.canvas.width+'px');
-        // element.children("#mainCanvas").css("height", scope.canvas.height+'px');
-        // element.children("#mainCanvas").css("background-color", "yellow");
         var tx, ty;
         var outterTransform = function (){
           originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
@@ -38,34 +33,27 @@ angular.module('slidesGeneratorApp')
           scope.origin.left = parseFloat(originarr[0]);
           scope.origin.top = parseFloat(originarr[1]);
           // console.log(origin);
-          if ($("body").scope().current!==scope.canvas)
-            currentSlide = $(".slide[id="+$("body").scope().current.index+"]");
+          if (scope.current!==scope.canvas)
+            currentSlide = $(".slide[id="+scope.current.index+"]");
           else
             currentSlide = null;
           if (currentSlide!==null) {
-            node = element.find(".recli[id="+$("body").scope().current.index+"]");
+            node = element.find(".recli[id="+scope.current.index+"]");
             node.css("-webkit-transition", "all 0.5s linear");
-            // node.css("-webkit-transform", "translate("+(tx)+"px,"+(ty)+"px");
-            position.left = scope.origin.left-(scope.origin.left-$("body").scope().current.x)*scope.canvas.scale+tx*scope.canvas.scale;
-            position.top = scope.origin.top-(scope.origin.top-$("body").scope().current.y)*scope.canvas.scale+ty*scope.canvas.scale;
-            newwidth = $("body").scope().current.width*scope.canvas.scale;
-            newheight = $("body").scope().current.height*scope.canvas.scale;
-            //kindly pseudo double-binding
-            $("body").scope().current.style = {
+            position.left = scope.origin.left-(scope.origin.left-scope.current.x)*scope.canvas.scale+tx*scope.canvas.scale;
+            position.top = scope.origin.top-(scope.origin.top-scope.current.y)*scope.canvas.scale+ty*scope.canvas.scale;
+            newwidth = scope.current.width*scope.canvas.scale;
+            newheight = scope.current.height*scope.canvas.scale;
+            scope.current.style = {
               left: position.left+'px',
               top: position.top+'px',
               width: newwidth+'px',
               height: newheight+'px'
             };
-            // console.log(scope.current.style);
             $("body").scope().$digest();
             node.bind("transitionend", removeTransition);
           }
         }
-        // scope.canvas.width = element[0].clientWidth;
-        // scope.canvas.height = element[0].clientHeight;
-        // scope.canvas.width = element.innerWidth();
-        // scope.canvas.height = element.innerHeight();
         var off;
         var ofx;
         var ofy;
@@ -112,9 +100,6 @@ angular.module('slidesGeneratorApp')
         }
         element.bind("mousedown", function(event){
           console.log("mousedown captured in canvas.js");
-          // $("body").scope().current.selected = false;
-          // $("body").scope().current = scope.canvas;
-          // $("body").scope().current.selected = true;
           element.children("#mainCanvas").trigger("mousedown");
           scope.dragScale = false;
           $document.bind('mousemove', mousemove);
@@ -218,15 +203,15 @@ angular.module('slidesGeneratorApp')
           afy = scope.canvas.scale*(ofy-oy)+oy;
           ffx = off.left + (scope.canvas.width-r*parseFloat(scope.slides[i].style.width))/2;
           ffy = off.top + (scope.canvas.height-reserve-r*parseFloat(scope.slides[i].style.height))/2 + reserve;
-          ffx -= $("body").scope().current.x * scope.canvas.scale;
-          ffy -= $("body").scope().current.y * scope.canvas.scale;
+          ffx -= scope.current.x * scope.canvas.scale;
+          ffy -= scope.current.y * scope.canvas.scale;
           tx = (ffx-afx)/scope.canvas.scale;
           ty = (ffy-afy)/scope.canvas.scale;
           translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
           zoomin(null, false);
         }
         function moveToCurrent(){
-          moveto($("body").scope().current.index);
+          moveto(scope.current.index);
         }
         scope.$on("newSlide", moveToCurrent);
         scope.$on("unselect-all-text", function(){

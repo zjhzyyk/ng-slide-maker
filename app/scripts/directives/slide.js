@@ -30,9 +30,11 @@ angular.module('slidesGeneratorApp')
           move = false;
           if ($("body").scope().current !== scope.slides[index]) {
             movein = true;
+            select();
             afterZoom = function(){
               console.log("in afterZoom");
-              select();
+              $("body").scope().current.selected = true;
+              $("body").scope().$digest();
               unbindZoomend();
             };
             unbindZoomend = scope.$on("zoomend", afterZoom);
@@ -44,8 +46,8 @@ angular.module('slidesGeneratorApp')
         function select(mode){
           $("body").scope().current.selected = false;
           $("body").scope().current = scope.slides[index];
-          // if (mode==="move") $("body").scope().current.selected = true;
-          $("body").scope().current.selected = true;
+          if (mode==="move") $("body").scope().current.selected = true;
+          // $("body").scope().current.selected = true;
           offset = element.offset();
           var x = offset.left-$("#slideFrames").offset().left;
           var y = offset.top-$("#slideFrames").offset().top;

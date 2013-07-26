@@ -71,20 +71,6 @@ ul {
 	/*z-index: auto;*/
 }
 
-/*input#zoomin {
-	position: fixed;
-	left: 300px;
-	top: 60px;
-	z-index: 100;
-}
-
-input#zoomout {
-	position: fixed;
-	left: 400px;
-	top: 60px;
-	z-index: 100;
-}*/
-
 .slide {
 	position: absolute;
 	display: block;
@@ -153,7 +139,7 @@ ul {
 .toolbar {
 	position: absolute;
 	left: 70px;
-	top: -45px;
+	top: -55px;
 }
 
 textarea {
