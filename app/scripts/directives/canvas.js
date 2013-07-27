@@ -175,11 +175,11 @@ angular.module('slidesGeneratorApp')
         scope.$watch('mainx', function(){
           // console.log("in watch f");
           $('#slideFrames').css("left", scope.mainx+'px');
-          $('#textFrames').css("left", scope.mainx+'px');
+          $('#frames').css("left", scope.mainx+'px');
         });
         scope.$watch('mainy', function(){
           $('#slideFrames').css("top", scope.mainy+'px');
-          $('#textFrames').css("top", scope.mainy+'px');
+          $('#frames').css("top", scope.mainy+'px');
         });
         function moveto(i){
           if (i<0) return;
@@ -216,6 +216,9 @@ angular.module('slidesGeneratorApp')
         scope.$on("newSlide", moveToCurrent);
         scope.$on("unselect-all-text", function(){
           scope.$broadcast("unselect-textbox");
+        });
+        scope.$on("unselect-all-image", function(){
+          scope.$broadcast("unselect-image");
         });
         scope.$on("present", function(){
           var present = $window.open("index.html?presentation=true");

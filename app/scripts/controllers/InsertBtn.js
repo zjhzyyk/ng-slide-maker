@@ -12,7 +12,7 @@ angular.module('slidesGeneratorApp')
   	};
   	$scope.addImage = function(){
   		if ($scope.current!==$scope.canvas) {
-  			$scope.current.addImage();
+  			$scope.openAddImageModal();
   		}
   		else 
   			console.log("no slide selected");

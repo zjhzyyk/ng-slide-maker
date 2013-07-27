@@ -90,10 +90,10 @@
           </div>
         </li>
       </ul>
-      <div id="textFrames">
+      <div id="frames">
         <div ng-repeat="slide in slides" class="t-frame-outter" ng-style="slide.getPosStyle()">
           <div ng-repeat="component in slide.components" class="text-frame-wrapper" ng-style="component.frameStyle">
-            <div class="textFrame">
+            <div class="frame">
               <div class="rec-tl"></div>
               <div class="rec-tr"></div>
               <div class="rec-bl"></div>
@@ -107,6 +107,21 @@
         <button class="btn" id="zoomin"><i class="icon-zoom-in"></i></button>
         <button class="btn" id="zoomout"><i class="icon-zoom-out"></i></button>
       </div>
+    </div>
+
+    <div modal="addImageModal" close="closeAddImageModal()" options="addImageModalOpts">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="closeAddImageModal()">&times;</button>
+            <h3>Add an image</h3>
+        </div>
+        <div class="modal-body">
+            <input type="text" placeholder="input url..." ng-model="imageURL">
+            <img id="img-preview" class="imgPreview">
+        </div>
+        <div class="modal-footer">
+            <button id="image-submit" class="btn btn-success disabled submit" ng-click="submitAddImageModal()">Please input url</button>
+            <button class="btn btn-warning cancel" ng-click="closeAddImageModal()">Cancel</button>
+        </div>
     </div>
 
     <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;">
@@ -209,7 +224,7 @@
     <script src="components/angular-resource/angular-resource.js"></script>
     <script src="components/angular-cookies/angular-cookies.js"></script>
     <script src="components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="components/angular-ui-bootstrap-bower/ui-bootstrap.js"></script>
+    <script src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="components/wysihtml5/parser_rules/advanced.js"></script>
     <script type="text/javascript" src="components/wysihtml5/dist/wysihtml5-0.3.0.js"></script>
 
@@ -222,8 +237,9 @@
     <script src="scripts/controllers/Main.js"></script>
     <script src="scripts/directives/rec.js"></script>
     <script src="scripts/directives/component.js"></script>
-    <script src="scripts/directives/textFrame.js"></script>
+    <script src="scripts/directives/frame.js"></script>
     <script src="scripts/directives/finalComponent.js"></script>
+    <script src="scripts/directives/imgPreview.js"></script>
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

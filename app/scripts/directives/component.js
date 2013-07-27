@@ -11,26 +11,16 @@ angular.module('slidesGeneratorApp')
           scope.$emit("unselect-all-text");
           textid = "slide"+scope.slide.index+"text"+scope.component.id;
         	child = $("<textarea id="+textid+" placeholder='input here...' autofocus rows='1'></textarea>");
-          // console.log(child);
         	child.appendTo(element);
-
-          // scope.component.frameStyle.width = '150px';
-          // scope.component.frameStyle.height = child.height()+'px';
-          // console.log("ifr w", child.width(), "ifr h", child.height());
-
         	editor = new wysihtml5.Editor(textid, { // id of textarea element
           toolbar:      "slide"+scope.slide.index+"toolbar", // id of toolbar element
           parserRules:  wysihtml5ParserRules, // defined in parser rules set 
           stylesheets:  "components/wysihtml5/examples/css/stylesheet.css"
         	});
-          element[0].style.left = scope.component.x+'px';
-          element[0].style.top = scope.component.y+'px';
           scope.component.editor = editor;
           iframe = $(editor.composer.iframe);
           body = iframe.contents().find('body');
           editor.on('load', function() {
-            // iframe.wysihtml5_size_matters();
-            // iframe[0].style.width = "0";
             
             body.css('overflow', 'hidden');
             // body.css('min-width', 0);
@@ -46,19 +36,15 @@ angular.module('slidesGeneratorApp')
               // iframe.css('min-width', 0);
               // adjustWidth();
               adjustHeight();
-
               // scope.component.frameStyle.width = (iframe[0].offsetWidth * scope.canvas.scale)+'px';
               scope.component.frameStyle.height = (iframe[0].offsetHeight * scope.canvas.scale)+'px';
-
               $("body").scope().$digest();
             });
 
             body.on('focus', function(){
               scope.$emit("unselect-all-text");
             });
-
             adjustHeight();
-
             scope.component.frameStyle.width = (iframe[0].offsetWidth * scope.canvas.scale)+'px';
             scope.component.frameStyle.height = (iframe[0].offsetHeight * scope.canvas.scale)+'px';
 
@@ -69,24 +55,14 @@ angular.module('slidesGeneratorApp')
               body.blur();
               iframe[0].style.width = scope.component.width+'px';
               scope.component.frameStyle.display = "block";
+              $("body").scope().current.selected = false;
               $("body").scope().$digest();
-              // element.dblclick();
             });
           });
           editor.on('change', function(){
             console.log("content change: ", body[0].innerHTML);
             scope.component.content = body[0].innerHTML;
             $("body").scope().$digest();
-          });
-          // element.dblclick(function() {
-          //   scope.component.frameStyle.display = "block";
-          //   $("body").scope().$digest();
-          // });
-          scope.$watch("component.x", function(){
-            element[0].style.left = scope.component.x+'px';
-          });
-          scope.$watch("component.y", function(){
-            element[0].style.top = scope.component.y+'px';
           });
           scope.$watch("component.width", function(){
             // console.log("prev width", iframe[0].style.width, "new width", scope.component.width);
@@ -99,6 +75,31 @@ angular.module('slidesGeneratorApp')
             scope.component.frameStyle.height = (iframe[0].offsetHeight * scope.canvas.scale)+'px';
           });
         }
+        else if (scope.component.type==="image") {
+          element.append($("<img src='"+scope.component.content+"'>"));
+          scope.component.frameStyle.width = (element[0].offsetWidth * scope.canvas.scale)+'px';
+          scope.component.frameStyle.height = (element[0].offsetHeight * scope.canvas.scale)+'px';
+          scope.$watch("component.width", function(){
+            element[0].firstChild.style.width = scope.component.width+'px';
+            scope.component.frameStyle.width = (scope.component.width * scope.canvas.scale)+'px';
+          });
+          scope.$watch("component.height", function(){
+            element[0].firstChild.style.height = scope.component.height+'px';
+            scope.component.frameStyle.height = (scope.component.height * scope.canvas.scale)+'px';
+          });
+          element.mousedown(function(){
+            $("body").scope().current.selected = false;
+            $("body").scope().$digest();
+          });
+        }
+        element[0].style.left = scope.component.x+'px';
+        element[0].style.top = scope.component.y+'px';
+        scope.$watch("component.x", function(){
+          element[0].style.left = scope.component.x+'px';
+        });
+        scope.$watch("component.y", function(){
+          element[0].style.top = scope.component.y+'px';
+        });
       }
     };
   });

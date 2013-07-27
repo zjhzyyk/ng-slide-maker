@@ -40,6 +40,13 @@ angular.module('slidesGeneratorApp')
             unbindZoomend = scope.$on("zoomend", afterZoom);
             scope.$emit("moveto", index);
           }
+          else if ($("body").scope().current.selected===false) {
+            movein = true;
+            $("body").scope().current.selected = true;
+            $("body").scope().$digest();
+            scope.$emit("unselect-all-text");
+            scope.$emit("unselect-all-image");
+          }
           $document.bind('mousemove', mousemove);
           $document.bind('mouseup', mouseup);
         });
@@ -105,6 +112,11 @@ angular.module('slidesGeneratorApp')
         });
         scope.$watch("slide.y", function(){
           element.css("top", scope.slide.y+'px');
+        });
+        scope.$watch("slide.imgnum", function(newvalue, oldvalue){
+          if (newvalue === oldvalue+1) {
+            $("body").scope().current.selected = false;
+          }
         });
         offset = element.offset();
         var left = offset.left-$("#slideFrames").offset().left;

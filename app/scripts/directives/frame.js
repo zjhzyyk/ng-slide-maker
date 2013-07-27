@@ -1,11 +1,29 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('textFrame', ['$document', function ($document) {
+  .directive('frame', ['$document', function ($document) {
     return {
       restrict: 'C',
       terminal: true,
       link: function postLink(scope, element, attrs) {
+        if (scope.component.type==="textbox") {
+          element.dblclick(function(){
+            scope.component.frameStyle.display = "none";
+            $("body").scope().$digest();
+            $(scope.component.editor.composer.iframe).contents().find('body').focus();
+            $(scope.component.editor.composer.iframe).css("width", scope.component.width+'px');
+          });
+          scope.$on("unselect-textbox", function(){
+            scope.component.frameStyle.display = "none";
+            $("body").scope().$$phase || $("body").scope().$digest();
+            $(scope.component.editor.composer.iframe).css("width", scope.component.width+'px');
+          });
+        } else if (scope.component.type==="image") {
+          scope.$on("unselect-image", function(){
+            scope.component.frameStyle.display = "none";
+            $("body").scope().$$phase || $("body").scope().$digest();
+          });
+        }
         var prex = 0, prey = 0, ci = 0;
         var coef = [
         {x:-1, y:-1},
@@ -20,7 +38,7 @@ angular.module('slidesGeneratorApp')
         {x:0, y:0}
         ];
         element.mousedown(function(event){
-          console.log("mousedown on textFrame"); 
+          console.log("mousedown on frame"); 
           event.preventDefault();
           event.stopPropagation();
           prex = event.clientX;
@@ -30,6 +48,7 @@ angular.module('slidesGeneratorApp')
         });
         element.children().each(function(index){
           $(this).mousedown(function(event){
+            console.log("mousedown on the corner");
             event.preventDefault();
             event.stopPropagation();
             prex = event.screenX;
@@ -63,6 +82,7 @@ angular.module('slidesGeneratorApp')
           $document.unbind('mouseup', cmouseup);
         }
         function cmousemove(event){
+          console.log("in resizing component");
           event.preventDefault();
           event.stopPropagation();
           // console.log("old width", scope.component.width);
@@ -73,26 +93,11 @@ angular.module('slidesGeneratorApp')
           scope.component.frameStyle.top = (parseFloat(scope.component.frameStyle.top)+(event.screenY-prey)*coef2[ci].y)+'px';
           scope.component.width += (event.screenX-prex)*coef[ci].x/coef[3].x/scope.canvas.scale;
           scope.component.height += (event.screenY-prey)*coef[ci].y/coef[3].y/scope.canvas.scale;
-          // scope.component.frameStyle.width = (scope.component.width*scope.canvas.scale)+'px';
-          // console.log("scale", scope.canvas.scale);
-          // console.log("new width", scope.component.width);
-          // console.log("new frame width", scope.component.frameStyle.width);
-          // scope.component.frameStyle.height = (scope.component.height*scope.canvas.scale)+'px';
           prex = event.screenX;
           prey = event.screenY;
           $("body").scope().$digest();
         }
-        element.dblclick(function(){
-          scope.component.frameStyle.display = "none";
-          $("body").scope().$digest();
-          $(scope.component.editor.composer.iframe).contents().find('body').focus();
-          $(scope.component.editor.composer.iframe).css("width", scope.component.width+'px');
-        });
-        scope.$on("unselect-textbox", function(){
-          scope.component.frameStyle.display = "none";
-          $("body").scope().$$phase || $("body").scope().$digest();
-          $(scope.component.editor.composer.iframe).css("width", scope.component.width+'px');
-        });
+        
       }
     };
   }]);

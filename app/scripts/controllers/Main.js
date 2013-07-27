@@ -14,6 +14,7 @@ angular.module('slidesGeneratorApp')
       this.width = 600;
       this.height = 450;
       this.textnum = 0;
+      this.imgnum = 0;
       this.components = [];
       this.style={};
       this.toolbar = "slide"+this.index+"toolbar";
@@ -60,19 +61,27 @@ angular.module('slidesGeneratorApp')
       this.current = this.components[this.components.length-1];
       this.textnum++;
     };
-    Slide.prototype.addImage = function() {
+    Slide.prototype.addImage = function(url, w, h) {
       console.log("add image in slide "+this.index);
+      this.imgnum++;
+      var that = this;
       this.components.push(new Component({
         type: "image",
-        content: "",
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
+        content: url,
+        x: (that.width-w)/2,
+        y: (that.height-h)/2,
+        width: w,
+        height: h,
         frameStyle: {
-          
+          left: ((that.width-w)/2*$scope.canvas.scale)+"px",
+          top: ((that.height-h)/2*$scope.canvas.scale)+"px",
+          width: 0,
+          height: 0,
+          display: "block"
         }
       }));
+      console.log(this.components[this.components.length-1].x);
+      console.log(this.components[this.components.length-1].y);
     };
     Slide.prototype.getPosStyle = function () {
       return {
@@ -147,5 +156,25 @@ angular.module('slidesGeneratorApp')
     };
     $scope.present = function(){
       $scope.$broadcast("present");
-    }
+    };
+    $scope.addImageModal = false;
+    $scope.openAddImageModal = function(){
+      $scope.imageURL = "";
+      $scope.addImageModal = true;
+    };
+    $scope.closeAddImageModal = function () {
+      $scope.addImageModal = false;
+    };
+    $scope.addImageModalOpts = {
+      backdropFade: true,
+      dialogFade:true
+    };
+    $scope.imageURL="";
+    $scope.submitAddImageModal = function(){
+      // var w = parseFloat($("#img-preview")[0].naturalWidth);
+      // var h = parseFloat($("#img-preview")[0].naturalHeight);
+      // console.log("w", w, "h", h);
+      $scope.current.addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
+      $scope.closeAddImageModal();
+    };
   }]);
