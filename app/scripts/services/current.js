@@ -1,4 +1,9 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .value('current', {});
+  .factory("current", [function(){
+  	var current;
+  	return {
+  		
+  	};
+  }]);

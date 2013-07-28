@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .controller('MainCtrl', ['$scope', 'localStorage', '$window', function ($scope, localStorage, $window) {
+  .controller('MainCtrl', ['$scope', 'localStorage', 'slides', function ($scope, localStorage, slides) {
   	var defaultSlideMargin = 30;
   	var Slide = function (title, i, selected){
       this.title = title || "";
@@ -18,7 +18,8 @@ angular.module('slidesGeneratorApp')
       this.components = [];
       this.style={};
       this.toolbar = "slide"+this.index+"toolbar";
-      this.current = null;
+      // this.current = null;
+      this.background = "";
     };
     var Component = function(opt){
       for (var prop in opt) {
@@ -130,10 +131,14 @@ angular.module('slidesGeneratorApp')
       left:0,
       top:0
     };
-    $window.setInterval(function(){
+    $scope.$watch("slides", function(){
       localStorage.storePresentation($scope.slides);
       console.log(localStorage.getPresentation());
-    }, 30000);
+    }, true);
+    // $window.setInterval(function(){
+    //   localStorage.storePresentation($scope.slides);
+    //   console.log(localStorage.getPresentation());
+    // }, 30000);
     $scope.addSlide = function() {
       var snum = $scope.slideNum();
       var slide = new Slide("", snum);
@@ -160,21 +165,10 @@ angular.module('slidesGeneratorApp')
     $scope.present = function(){
       $scope.$broadcast("present");
     };
-    $scope.addImageModal = false;
+    $scope.openSlideStyle = function(){
+      $scope.$broadcast("openSlideStyle");
+    };
     $scope.openAddImageModal = function(){
-      $scope.imageURL = "";
-      $scope.addImageModal = true;
-    };
-    $scope.closeAddImageModal = function () {
-      $scope.addImageModal = false;
-    };
-    $scope.addImageModalOpts = {
-      backdropFade: true,
-      dialogFade:true
-    };
-    $scope.imageURL="";
-    $scope.submitAddImageModal = function(){
-      $scope.current.addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
-      $scope.closeAddImageModal();
+      $scope.$broadcast("openAddImageModal");
     };
   }]);

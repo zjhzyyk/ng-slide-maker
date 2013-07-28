@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="slidesGeneratorApp" ng-controller="MainCtrl">
+  <body ng-app="slidesGeneratorApp" ng-controller="MainCtrl" class="ng-cloak">
     <!--[if lt IE 7]>
       <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
     <![endif]-->
@@ -30,9 +30,9 @@
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
-        <a class="brand" href="#/">slidegen</a>
+        <a class="brand">slidegen</a>
         <ul class="nav">
-          <li><a href="#">save</a></li>
+          <li><a>save</a></li>
           <li class="dropdown" ng-controller="InsertBtnCtrl">
             <a class="dropdown-toggle" href="#">insert</a>
             <ul class="dropdown-menu">
@@ -41,9 +41,11 @@
               </li>
             </ul>
           </li>
-          <li><a href="#">view</a></li>
-          <li><a href="#" ng-click="present()">present</a></li>
-          <li><a href="#" ng-click="">style</a></li>
+          <li><a>view</a></li>
+          <li><a ng-click="present()">present</a></li>
+          <li>
+            <a ng-click="openSlideStyle()">style</a>
+          </li>
         </ul>
 
         <ul class="nav pull-right">
@@ -83,6 +85,7 @@
       <ul id="mainCanvas" draggable>
         <li ng-repeat="slide in slides">
           <div class="slide" id="{{slide.index}}" draggable>
+            <div class="slide-background"></div>
             <form>
               <div ng-repeat="component in slide.components">
                 <div class="component"></div>
@@ -110,22 +113,36 @@
       </div>
     </div>
 
-    <div modal="addImageModal" close="closeAddImageModal()" options="addImageModalOpts">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="closeAddImageModal()">&times;</button>
-            <h3>Add an image</h3>
-        </div>
-        <div class="modal-body">
-            <input type="text" placeholder="input url..." ng-model="imageURL">
-            <img id="img-preview" class="imgPreview">
-        </div>
-        <div class="modal-footer">
-            <button id="image-submit" class="btn btn-success disabled submit" ng-click="submitAddImageModal()">Please input url</button>
-            <button class="btn btn-warning cancel" ng-click="closeAddImageModal()">Cancel</button>
-        </div>
+    <div ng-controller="addImageModal" modal="addImageModal" close="closeAddImageModal()" options="addImageModalOpts">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="closeAddImageModal()">&times;</button>
+        <h3>Add an image</h3>
+      </div>
+      <div class="modal-body">
+        <input type="text" placeholder="input url..." ng-model="imageURL">
+        <img id="img-preview" class="imgPreview">
+      </div>
+      <div class="modal-footer">
+        <button id="image-submit" class="btn btn-success disabled submit" ng-click="submitAddImageModal()">Please input url</button>
+        <button class="btn btn-warning cancel" ng-click="closeAddImageModal()">Cancel</button>
+      </div>
     </div>
 
-    
+    <div ng-controller="slideStyle" modal="slideStyle" close="closeSlideStyle()" options="slideStyleOpts">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="closeSlideStyle()">&times;</button>
+        <h3>Slide Style</h3>
+      </div>
+      <div class="modal-body">
+        <ul class="slide-style-list">
+          <li ng-repeat="style in slideStyles" class="slideStyle" id="{{'style'+$index}}"></li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button id="image-submit" class="btn btn-success submit" ng-click="submitSlideStyle()">Submit</button>
+        <button class="btn btn-warning cancel" ng-click="closeSlideStyle()">Cancel</button>
+      </div>
+    </div>
 
     <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;">
       <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute; border: 1px black solid;" class="pslide">
@@ -222,28 +239,39 @@
       </script>
     </div>
 
-    <script type="text/javascript" src="components/jquery/jquery.js"></script>
+    <script src="components/jquery/jquery.js"></script>
     <script src="components/angular/angular.js"></script>
     <script src="components/angular-resource/angular-resource.js"></script>
     <script src="components/angular-cookies/angular-cookies.js"></script>
     <script src="components/angular-sanitize/angular-sanitize.js"></script>
     <script src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
-    <script type="text/javascript" src="components/wysihtml5/parser_rules/advanced.js"></script>
-    <script type="text/javascript" src="components/wysihtml5/dist/wysihtml5-0.3.0.js"></script>
+    <script src="components/wysihtml5/parser_rules/advanced.js"></script>
+    <script src="components/wysihtml5/dist/wysihtml5-0.3.0.js"></script>
 
     <!-- build:js scripts/scripts.js -->
     <script src="scripts/app.js"></script>
-    <script src="scripts/controllers/InsertBtn.js"></script>
+    
+    <script src="scripts/services/slideStyle.js"></script>
+    <script src="scripts/services/slides.js"></script>
+    <script src="scripts/services/canvas.js"></script>
+    <script src="scripts/services/current.js"></script>
+    <script src="scripts/services/localStorage.js"></script>
+    
     <script src="scripts/directives/canvas.js"></script>
     <script src="scripts/directives/draggable.js"></script>
     <script src="scripts/directives/slide.js"></script>
-    <script src="scripts/controllers/Main.js"></script>
+    <script src="scripts/directives/slideStyle.js"></script>
     <script src="scripts/directives/rec.js"></script>
     <script src="scripts/directives/component.js"></script>
     <script src="scripts/directives/frame.js"></script>
     <script src="scripts/directives/finalComponent.js"></script>
     <script src="scripts/directives/imgPreview.js"></script>
-    <script src="scripts/services/localStorage.js"></script>
+    
+    <script src="scripts/controllers/InsertBtn.js"></script>
+    <script src="scripts/controllers/Main.js"></script>
+    <script src="scripts/controllers/slideStyle.js"></script>
+    <script src="scripts/controllers/addImageModal.js"></script>
+
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

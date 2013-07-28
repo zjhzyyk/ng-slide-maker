@@ -165,6 +165,16 @@ img {
 	height: auto;
 }
 
+ul.slide-style-list {
+	margin: 0;
+	list-style: none;
+}
+
+ul.slide-style-list li {
+	display: inline-block;
+	margin: 1em;
+}
+
 /*for test*/
 .point{
 	position: fixed;

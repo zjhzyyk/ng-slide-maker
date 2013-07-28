@@ -118,6 +118,10 @@ angular.module('slidesGeneratorApp')
             $("body").scope().current.selected = false;
           }
         });
+        scope.$watch("slide.background", function(newvalue){
+          element.children(".slide-background").children().remove();
+          element.children(".slide-background").append($(scope.slide.background));
+        });
         offset = element.offset();
         var left = offset.left-$("#slideFrames").offset().left;
         var top = offset.top-$("#slideFrames").offset().top;
