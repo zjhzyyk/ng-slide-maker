@@ -43,6 +43,7 @@
           </li>
           <li><a href="#">view</a></li>
           <li><a href="#" ng-click="present()">present</a></li>
+          <li><a href="#" ng-click="">style</a></li>
         </ul>
 
         <ul class="nav pull-right">
@@ -123,6 +124,8 @@
             <button class="btn btn-warning cancel" ng-click="closeAddImageModal()">Cancel</button>
         </div>
     </div>
+
+    
 
     <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;">
       <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute; border: 1px black solid;" class="pslide">
@@ -240,6 +243,7 @@
     <script src="scripts/directives/frame.js"></script>
     <script src="scripts/directives/finalComponent.js"></script>
     <script src="scripts/directives/imgPreview.js"></script>
+    <script src="scripts/services/localStorage.js"></script>
     <!-- endbuild -->
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

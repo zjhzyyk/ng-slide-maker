@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .controller('MainCtrl', ['$scope', function ($scope) {
+  .controller('MainCtrl', ['$scope', 'localStorage', '$window', function ($scope, localStorage, $window) {
   	var defaultSlideMargin = 30;
   	var Slide = function (title, i, selected){
       this.title = title || "";
@@ -56,7 +56,7 @@ angular.module('slidesGeneratorApp')
           height: 0,
           display: "none"
         },
-        editor: null
+        textid: ""
       }));
       this.current = this.components[this.components.length-1];
       this.textnum++;
@@ -130,7 +130,10 @@ angular.module('slidesGeneratorApp')
       left:0,
       top:0
     };
-
+    $window.setInterval(function(){
+      localStorage.storePresentation($scope.slides);
+      console.log(localStorage.getPresentation());
+    }, 30000);
     $scope.addSlide = function() {
       var snum = $scope.slideNum();
       var slide = new Slide("", snum);
@@ -171,9 +174,6 @@ angular.module('slidesGeneratorApp')
     };
     $scope.imageURL="";
     $scope.submitAddImageModal = function(){
-      // var w = parseFloat($("#img-preview")[0].naturalWidth);
-      // var h = parseFloat($("#img-preview")[0].naturalHeight);
-      // console.log("w", w, "h", h);
       $scope.current.addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
       $scope.closeAddImageModal();
     };

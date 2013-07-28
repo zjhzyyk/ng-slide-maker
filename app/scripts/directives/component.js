@@ -17,7 +17,7 @@ angular.module('slidesGeneratorApp')
           parserRules:  wysihtml5ParserRules, // defined in parser rules set 
           stylesheets:  "components/wysihtml5/examples/css/stylesheet.css"
         	});
-          scope.component.editor = editor;
+          scope.component.textid = textid;
           iframe = $(editor.composer.iframe);
           body = iframe.contents().find('body');
           editor.on('load', function() {
@@ -87,8 +87,12 @@ angular.module('slidesGeneratorApp')
             element[0].firstChild.style.height = scope.component.height+'px';
             scope.component.frameStyle.height = (scope.component.height * scope.canvas.scale)+'px';
           });
-          element.mousedown(function(){
+          element.mousedown(function(event){
+            event.preventDefault();
+            event.stopPropagation();
+            console.log("mousedown on component");
             $("body").scope().current.selected = false;
+            scope.component.frameStyle.display = "block";
             $("body").scope().$digest();
           });
         }
