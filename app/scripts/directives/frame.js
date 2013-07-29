@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('frame', ['$document', function ($document) {
+  .directive('frame', ['$document', 'canvas', function ($document, canvas) {
     return {
       restrict: 'C',
       terminal: true,
@@ -62,8 +62,8 @@ angular.module('slidesGeneratorApp')
         function mousemove(event) {
           event.preventDefault();
           event.stopPropagation();
-          scope.component.x = scope.component.x + (event.clientX-prex)/scope.canvas.scale;
-          scope.component.y = scope.component.y + (event.clientY-prey)/scope.canvas.scale;
+          scope.component.x = scope.component.x + (event.clientX-prex)/canvas.getCanvasScale();
+          scope.component.y = scope.component.y + (event.clientY-prey)/canvas.getCanvasScale();
           scope.component.frameStyle.left = (parseFloat(scope.component.frameStyle.left)+event.clientX-prex)+'px';
           scope.component.frameStyle.top = (parseFloat(scope.component.frameStyle.top)+event.clientY-prey)+'px';
           prex = event.clientX;
@@ -88,17 +88,16 @@ angular.module('slidesGeneratorApp')
           event.stopPropagation();
           // console.log("old width", scope.component.width);
           // console.log("old frame width", scope.component.frameStyle.width);
-          scope.component.x += (event.screenX-prex)*coef2[ci].x/scope.canvas.scale;
-          scope.component.y += (event.screenY-prey)*coef2[ci].y/scope.canvas.scale;
+          scope.component.x += (event.screenX-prex)*coef2[ci].x/canvas.getCanvasScale();
+          scope.component.y += (event.screenY-prey)*coef2[ci].y/canvas.getCanvasScale();
           scope.component.frameStyle.left = (parseFloat(scope.component.frameStyle.left)+(event.screenX-prex)*coef2[ci].x)+'px';
           scope.component.frameStyle.top = (parseFloat(scope.component.frameStyle.top)+(event.screenY-prey)*coef2[ci].y)+'px';
-          scope.component.width += (event.screenX-prex)*coef[ci].x/coef[3].x/scope.canvas.scale;
-          scope.component.height += (event.screenY-prey)*coef[ci].y/coef[3].y/scope.canvas.scale;
+          scope.component.width += (event.screenX-prex)*coef[ci].x/coef[3].x/canvas.getCanvasScale();
+          scope.component.height += (event.screenY-prey)*coef[ci].y/coef[3].y/canvas.getCanvasScale();
           prex = event.screenX;
           prey = event.screenY;
           $("body").scope().$digest();
         }
-        
       }
     };
   }]);

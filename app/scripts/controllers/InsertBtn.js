@@ -1,17 +1,19 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .controller('InsertBtnCtrl', ['$scope', function ($scope) {
+  .controller('InsertBtnCtrl', ['$scope', 'slides', function ($scope, slides) {
   	$scope.addTextBox = function(){
   		console.log("add textbox triggered");
-  		if ($scope.current!==$scope.canvas) {
-  			$scope.current.addTextBox();
+  		// if ($scope.current!==$scope.canvas) {
+			if (slides.isCurrentSlide()) {
+  			// $scope.current.addTextBox();
+  			slides.getCurrentSlide().addTextBox();
   		}
   		else 
   			console.log("no slide selected");
   	};
   	$scope.addImage = function(){
-  		if ($scope.current!==$scope.canvas) {
+  		if (slides.isCurrentSlide()) {
   			$scope.openAddImageModal();
   		}
   		else 
@@ -21,7 +23,7 @@ angular.module('slidesGeneratorApp')
 	    {
 	    	name:"slide",
 	    	click:function(){
-	    		$scope.$eval("addSlide()");
+	    		slides.addSlide();
 	    	}
 	   	},
 	    {

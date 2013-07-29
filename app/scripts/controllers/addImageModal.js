@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-	.controller("addImageModal", ['$scope', function($scope){
+	.controller("addImageModal", ['$scope', 'slides', function($scope, slides){
 		$scope.addImageModal = false;
     $scope.openAddImageModal = function(){
       $scope.imageURL = "";
@@ -16,7 +16,8 @@ angular.module('slidesGeneratorApp')
     };
     $scope.imageURL="";
     $scope.submitAddImageModal = function(){
-      $scope.current.addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
+      slides.getCurrentSlide().addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
+      // $scope.current.addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
       $scope.closeAddImageModal();
     };
     $scope.$on("openAddImageModal", $scope.openAddImageModal);

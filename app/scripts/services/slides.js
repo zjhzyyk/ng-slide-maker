@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .factory("slides", [function(){
+  .factory("slides", ['canvas', function(canvas){
   	function Component(opt){
       for (var prop in opt) {
         if (opt.hasOwnProperty(prop)) {
@@ -50,8 +50,8 @@ angular.module('slidesGeneratorApp')
         width: 210,
         height: 20,
         frameStyle: {
-          left: (cx*$scope.canvas.scale)+"px",
-          top: (cy*$scope.canvas.scale)+"px",
+          left: (cx*canvas.getCanvasScale())+"px",
+          top: (cy*canvas.getCanvasScale())+"px",
           width: 0,
           height: 0,
           display: "none"
@@ -73,8 +73,8 @@ angular.module('slidesGeneratorApp')
         width: w,
         height: h,
         frameStyle: {
-          left: ((that.width-w)/2*$scope.canvas.scale)+"px",
-          top: ((that.height-h)/2*$scope.canvas.scale)+"px",
+          left: ((that.width-w)/2*canvas.getCanvasScale())+"px",
+          top: ((that.height-h)/2*canvas.getCanvasScale())+"px",
           width: 0,
           height: 0,
           display: "block"
@@ -96,35 +96,59 @@ angular.module('slidesGeneratorApp')
       };
     };
 
+    var cs = canvas.getCanvas();
+
+    var calcCenterCood = function(item){
+      return {
+        x:cs.width/2.0-item.width/2.0-cs.left,
+        y:cs.height/2.0-item.height/2.0-cs.top
+      };
+    };
+
   	var slides = [];
     var currentSlideId = -1;
+    var defaultSlideMargin = 30;
+
   	return {
       slideNum: function(){
         return slides.length;
       },
+      isCurrentSlide: function() {
+        return (currentSlideId<0 || currentSlideId>=this.slideNum()) ? false : true;
+      },
       getCurrentSlide: function(){
-        return (currentSlideId<0 || currentSlideId>=slideNum()) ? null : slides[currentSlideId];
+        return this.isCurrentSlide() ? slides[currentSlideId] : null;
+      },
+      getCurrentSlideId: function(){
+        return currentSlideId;
+      },
+      setCurrentSlideId: function(id) {
+        currentSlideId = id;
       },
       addSlide: function(){
-        var snum = slideNum();
+        var snum = this.slideNum();
         var slide = new Slide("", snum);
-        if ()
-    //   $scope.current.selected = false;
-    //   $scope.current = slide;
-    //   $scope.current.selected = true;
-
-    //   slide.x = snum==0 ? calcCenterCood(slide).x : 
-    //     $scope.slides[snum-1].x + $scope.slides[snum-1].width + defaultSlideMargin;
-    //   slide.y = snum==0 ? calcCenterCood(slide).y : $scope.slides[snum-1].y;
-    //   var left;
-    //   var top;
-    //   slide.style = {
-    //     left: 0,
-    //     top: 0,
-    //     width: slide.width*$scope.canvas.scale + "px",
-    //     height: slide.height*$scope.canvas.scale + "px"
-    //   };
-    //   $scope.slides.push(slide);
+        slide.x = snum===0 ? calcCenterCood(slide).x : 
+          slides[snum-1].x + slides[snum-1].width + defaultSlideMargin;
+        slide.y = snum===0 ? calcCenterCood(slide).y : slides[snum-1].y;
+        slide.style = {
+          left: 0,
+          top: 0,
+          width: slide.width*cs.scale + "px",
+          height: slide.height*cs.scale + "px"
+        };
+        if (currentSlideId!==-1 && currentSlideId<snum) {
+          this.getCurrentSlide().selected = false;
+        }
+        currentSlideId = snum;
+        slide.selected = true;
+        slides.push(slide);
+      },
+      getAllSlides: function(){
+        return slides;
+      },
+      getSlideById: function(id) {
+        return slides[id];
       }
   	};
   }]);

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('canvas', ['$document', '$window', function ($document, $window) {
+  .directive('canvas', ['$document', '$window', 'canvas', 'slides', function ($document, $window, canvas, slides) {
     return {
       restrict: 'C',
       link: function postLink(scope, element, attrs) {
@@ -20,31 +20,36 @@ angular.module('slidesGeneratorApp')
         };
         var newwidth=0;
         var newheight=0;
-        scope.canvas.width = window.innerWidth-element.offset().left;
-        scope.canvas.height = window.innerHeight-element.offset().top;
-        var ox = scope.canvas.width/2;
-        var oy = scope.canvas.height/2;
+        // scope.canvas.width = $window.innerWidth-element.offset().left;
+        // scope.canvas.height = $window.innerHeight-element.offset().top;
+        canvas.setCanvasWidth($window.innerWidth-element.offset().left);
+        canvas.setCanvasHeight($window.innerHeight-element.offset().top);
+        // var ox = scope.canvas.width/2;
+        // var oy = scope.canvas.height/2;
+        var ox = canvas.getCanvasWidth()/2;
+        var oy = canvas.getCanvasHeight()/2;
         var translate = "";
         element.children("#mainCanvas").css("-webkit-transform-origin", ox+'px '+oy+'px');
         var tx, ty;
         var outterTransform = function (){
           originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
           originarr = originstr.split(" ");
-          scope.origin.left = parseFloat(originarr[0]);
-          scope.origin.top = parseFloat(originarr[1]);
-          // console.log(origin);
-          if (scope.current!==scope.canvas)
-            currentSlide = $(".slide[id="+scope.current.index+"]");
+          // scope.origin.left = parseFloat(originarr[0]);
+          // scope.origin.top = parseFloat(originarr[1]);
+          var tleft = parseFloat(originarr[0]);
+          var ttop = parseFloat(originarr[1]);
+          if (slides.isCurrentSlide())
+            currentSlide = $(".slide[id="+slides.getCurrentSlide().index+"]");
           else
             currentSlide = null;
           if (currentSlide!==null) {
-            node = element.find(".recli[id="+scope.current.index+"]");
+            node = element.find(".recli[id="+slides.getCurrentSlide().index+"]");
             node.css("-webkit-transition", "all 0.5s linear");
-            position.left = scope.origin.left-(scope.origin.left-scope.current.x)*scope.canvas.scale+tx*scope.canvas.scale;
-            position.top = scope.origin.top-(scope.origin.top-scope.current.y)*scope.canvas.scale+ty*scope.canvas.scale;
-            newwidth = scope.current.width*scope.canvas.scale;
-            newheight = scope.current.height*scope.canvas.scale;
-            scope.current.style = {
+            position.left = tleft-(tleft-slides.getCurrentSlide().x)*canvas.getCanvasScale()+tx*canvas.getCanvasScale();
+            position.top = ttop-(ttop-slides.getCurrentSlide().y)*canvas.getCanvasScale()+ty*canvas.getCanvasScale();
+            newwidth = slides.getCurrentSlide().width*canvas.getCanvasScale();
+            newheight = slides.getCurrentSlide().height*canvas.getCanvasScale();
+            slides.getCurrentSlide().style = {
               left: position.left+'px',
               top: position.top+'px',
               width: newwidth+'px',
@@ -68,18 +73,16 @@ angular.module('slidesGeneratorApp')
         function zoomToPoint(d,x,y) {
           scope.$broadcast("unselect-textbox");
           off = element.offset();
-          ofx = off.left+scope.mainx;
-          ofy = off.top+scope.mainy;
-          ox = scope.canvas.width/2 + ofx;
-          oy = scope.canvas.height/2+ofy;
+          ofx = off.left+canvas.getCanvasLeft();
+          ofy = off.top+canvas.getCanvasTop();
+          ox = canvas.getCanvasWidth()/2 + ofx;
+          oy = canvas.getCanvasHeight()/2+ofy;
           cx = x;
           cy = y;
-          // console.log(event);
           off = $("#mainCanvas").offset();
           cfx = off.left;
           cfy = off.top;
-
-          var scale = scope.canvas.scale;
+          var scale = canvas.getCanvasScale();
           if (d>0) {
             scale *= ratio;
             ffx = ratio*(cfx-cx)+cx;
@@ -109,10 +112,10 @@ angular.module('slidesGeneratorApp')
           // console.log("mousemove in canvas.js");
           event.preventDefault();
           event.stopPropagation();
-          scope.mainx = parseFloat(element.children("#mainCanvas").css("left"));
-          scope.mainy = parseFloat(element.children("#mainCanvas").css("top"));
-          // console.log("cx:"+scope.mainx);
-          // console.log("cy:"+scope.mainy);
+          // scope.mainx = parseFloat(element.children("#mainCanvas").css("left"));
+          // scope.mainy = parseFloat(element.children("#mainCanvas").css("top"));
+          canvas.setCanvasLeft(parseFloat(element.children("#mainCanvas").css("left")));
+          canvas.setCanvasTop(parseFloat(element.children("#mainCanvas").css("top")));
           $("body").scope().$digest();
         }
         function mouseup(event){
@@ -129,20 +132,21 @@ angular.module('slidesGeneratorApp')
           // event.stopPropagation();
           console.log("zoomin clicked");
           off = element.offset();
-          zoomToPoint(1, off.left+scope.canvas.width/2, off.top+scope.canvas.height/2);
+          zoomToPoint(1, off.left+canvas.getCanvasWidth()/2, off.top+canvas.getCanvasHeight()/2);
         }
         function zoomoutDefault(){
           console.log("zoomout clicked");
           off = element.offset();
-          zoomToPoint(-1, off.left+scope.canvas.width/2, off.top+scope.canvas.height/2);
+          zoomToPoint(-1, off.left+canvas.getCanvasWidth()/2, off.top+canvas.getCanvasHeight()/2);
         }
         function zoomin(event, change) {
           $("#zoomin").unbind("click", zoominDefault);
           element[0].onmousewheel = function(){};
           
-          if (change===undefined || change===true || change===null) scope.canvas.scale *= ratio;
+          if (change===undefined || change===true || change===null)
+            canvas.setCanvasScale(canvas.getCanvasScale()*ratio);
           outterTransform();
-          var transform = "scale(" + scope.canvas.scale + ") "+ translate;
+          var transform = "scale(" + canvas.getCanvasScale() + ") "+ translate;
           // console.log(transform);
           document.getElementById("mainCanvas").style.webkitTransform = transform;
           $("#mainCanvas").bind("transitionend", endOfZoomIn);
@@ -157,9 +161,10 @@ angular.module('slidesGeneratorApp')
           $("#zoomout").unbind("click", zoomoutDefault);
           element[0].onmousewheel = function(){};
           console.log("zoomout clicked");
-          scope.canvas.scale /= ratio;
+          // scope.canvas.scale /= ratio;
+          canvas.setCanvasScale(canvas.getCanvasScale()/ratio);
           outterTransform();
-          var transform = "scale(" + scope.canvas.scale + ") "+translate;
+          var transform = "scale(" + canvas.getCanvasScale() + ") "+translate;
           element.children("#mainCanvas").css("-webkit-transform", transform);
           element.children("#mainCanvas").css("-moz-transform", transform);
           $("#mainCanvas").bind("transitionend", endOfZoomOut);
@@ -169,49 +174,47 @@ angular.module('slidesGeneratorApp')
           element[0].onmousewheel = mousewheel;
           $("#mainCanvas").unbind("transitionend", endOfZoomOut);
         }
-        scope.$watch('canvas.background', function(){
-          element.children("#backcolor").css("background-color", scope.canvas.background);
+        scope.$watch('canvas.getCanvasBackground()', function(newvalue){
+          element.children("#backcolor").css("background-color", newvalue);
         });
-        scope.$watch('mainx', function(){
+        scope.$watch('canvas.getCanvasLeft()', function(newvalue){
           // console.log("in watch f");
-          $('#slideFrames').css("left", scope.mainx+'px');
-          $('#frames').css("left", scope.mainx+'px');
+          $('#slideFrames').css("left", newvalue+'px');
+          $('#frames').css("left", newvalue+'px');
         });
-        scope.$watch('mainy', function(){
-          $('#slideFrames').css("top", scope.mainy+'px');
-          $('#frames').css("top", scope.mainy+'px');
+        scope.$watch('canvas.getCanvasTop()', function(newvalue){
+          $('#slideFrames').css("top", newvalue+'px');
+          $('#frames').css("top", newvalue+'px');
         });
         function moveto(i){
           if (i<0) return;
           console.log("in moveto "+i);
           off = element.offset();
-          ofx = off.left+scope.mainx;
-          ofy = off.top+scope.mainy;
-          ox = scope.canvas.width/2 + ofx;
-          oy = scope.canvas.height/2+ofy;
+          ofx = off.left+canvas.getCanvasLeft();
+          ofy = off.top+canvas.getCanvasTop();
+          ox = canvas.getCanvasWidth()/2 + ofx;
+          oy = canvas.getCanvasHeight()/2 + ofy;
           var wr = 0.85;
           var hr = 0.85;
           var reserve = 40;
-          // console.log(scope);
-          // console.log(i);
-          var r1 = scope.canvas.width * wr / parseFloat(scope.slides[i].style.width);
-          var r2 = (scope.canvas.height-reserve) * hr / parseFloat(scope.slides[i].style.height);
+          var r1 = canvas.getCanvasWidth() * wr / parseFloat(slides.getSlideById(i).style.width);
+          var r2 = (canvas.getCanvasHeight()-reserve) * hr / parseFloat(slides.getSlideById(i).style.height);
           var r = Math.min(r1,r2);
-          scope.canvas.scale *= r;
-          // console.log("r", r, "scale", scope.canvas.scale, "w", scope.canvas.width, "h", scope.canvas.height);
-          afx = scope.canvas.scale*(ofx-ox)+ox;
-          afy = scope.canvas.scale*(ofy-oy)+oy;
-          ffx = off.left + (scope.canvas.width-r*parseFloat(scope.slides[i].style.width))/2;
-          ffy = off.top + (scope.canvas.height-reserve-r*parseFloat(scope.slides[i].style.height))/2 + reserve;
-          ffx -= scope.current.x * scope.canvas.scale;
-          ffy -= scope.current.y * scope.canvas.scale;
-          tx = (ffx-afx)/scope.canvas.scale;
-          ty = (ffy-afy)/scope.canvas.scale;
+          canvas.getCanvas().scale *= r;
+          var scale = canvas.getCanvasScale();
+          afx = scale*(ofx-ox)+ox;
+          afy = scale*(ofy-oy)+oy;
+          ffx = off.left + (canvas.getCanvasWidth()-r*parseFloat(slides.getSlideById(i).style.width))/2;
+          ffy = off.top + (canvas.getCanvasHeight()-reserve-r*parseFloat(slides.getSlideById(i).style.height))/2 + reserve;
+          ffx -= slides.getCurrentSlide().x * scale;
+          ffy -= slides.getCurrentSlide().y * scale;
+          tx = (ffx-afx)/scale;
+          ty = (ffy-afy)/scale;
           translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
           zoomin(null, false);
         }
         function moveToCurrent(){
-          moveto(scope.current.index);
+          moveto(slides.getCurrentSlide().index);
         }
         scope.$on("newSlide", moveToCurrent);
         scope.$on("unselect-all-text", function(){

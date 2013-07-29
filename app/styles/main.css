@@ -12,18 +12,6 @@ ul {
 	z-index: 1000;
 }
 
-.sidemenu {
-	width:260px;
-	height: auto;
-	bottom: 0;
-	top: 0;
-	position: absolute;
-	display: none;
-	background: grey;
-	margin-top: 40px;
-	z-index: 100;
-}
-
 #sidebar {
 	position: absolute;
 	right: 25px;

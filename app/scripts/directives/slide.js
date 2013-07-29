@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('slide', ['$document', function ($document) {
+  .directive('slide', ['$document', 'slides', 'canvas', function ($document, slides, canvas) {
     var move = false, movein = false;
     return {
       restrict: 'C',
@@ -28,21 +28,23 @@ angular.module('slidesGeneratorApp')
           event.preventDefault();
           event.stopPropagation();
           move = false;
-          if ($("body").scope().current !== scope.slides[index]) {
+          // if ($("body").scope().current !== scope.slides[index]) {
+          if (slides.getCurrentSlideId()!==index) {
             movein = true;
             select();
             afterZoom = function(){
               console.log("in afterZoom");
-              $("body").scope().current.selected = true;
+              // $("body").scope().current.selected = true;
+              slides.getCurrentSlide().selected = true;
               $("body").scope().$digest();
               unbindZoomend();
             };
             unbindZoomend = scope.$on("zoomend", afterZoom);
             scope.$emit("moveto", index);
           }
-          else if ($("body").scope().current.selected===false) {
+          else if (slides.getCurrentSlide().selected===false) {
             movein = true;
-            $("body").scope().current.selected = true;
+            slides.getCurrentSlide().selected = true;
             $("body").scope().$digest();
             scope.$emit("unselect-all-text");
             scope.$emit("unselect-all-image");
@@ -51,17 +53,17 @@ angular.module('slidesGeneratorApp')
           $document.bind('mouseup', mouseup);
         });
         function select(mode){
-          $("body").scope().current.selected = false;
-          $("body").scope().current = scope.slides[index];
-          if (mode==="move") $("body").scope().current.selected = true;
-          // $("body").scope().current.selected = true;
+          slides.getCurrentSlide().selected = false;
+          // $("body").scope().current = scope.slides[index];
+          slides.setCurrentSlideId(index);
+          if (mode==="move") slides.getCurrentSlide().selected = true;
           offset = element.offset();
           var x = offset.left-$("#slideFrames").offset().left;
           var y = offset.top-$("#slideFrames").offset().top;
           scope.slide.style.left = x+'px';
           scope.slide.style.top = y+'px';
-          scope.slide.style.width = scope.slide.width*scope.canvas.scale;
-          scope.slide.style.height = scope.slide.height*scope.canvas.scale;
+          scope.slide.style.width = scope.slide.width*canvas.getCanvasScale();
+          scope.slide.style.height = scope.slide.height*canvas.getCanvasScale();
           $("body").scope().$digest();
         }
         function mousemove(event){
@@ -82,18 +84,18 @@ angular.module('slidesGeneratorApp')
           scope.slide.style = {
             left: x+'px',
             top: y+'px',
-            width: scope.slide.width*scope.canvas.scale + "px",
-            height: scope.slide.height*scope.canvas.scale + "px"
+            width: scope.slide.width*canvas.getCanvasScale() + "px",
+            height: scope.slide.height*canvas.getCanvasScale() + "px"
           };
           $("body").scope().$digest();
         }
         function mouseup(event){
           event.preventDefault();
           event.stopPropagation();
-          if (move===false && $("body").scope().current===scope.slide && movein===false) {
+          if (move===false && slides.getCurrentSlideId()===index && movein===false) {
             offset = element.offset();
-            var x = (event.clientX-offset.left)/scope.canvas.scale;
-            var y = (event.clientY-offset.top)/scope.canvas.scale;
+            var x = (event.clientX-offset.left)/canvas.getCanvasScale();
+            var y = (event.clientY-offset.top)/canvas.getCanvasScale();
             scope.slide.addTextBox(x, y);
             $("body").scope().$digest();
           }
@@ -115,7 +117,7 @@ angular.module('slidesGeneratorApp')
         });
         scope.$watch("slide.imgnum", function(newvalue, oldvalue){
           if (newvalue === oldvalue+1) {
-            $("body").scope().current.selected = false;
+            slides.getCurrentSlide().selected = false;
           }
         });
         scope.$watch("slide.background", function(newvalue){

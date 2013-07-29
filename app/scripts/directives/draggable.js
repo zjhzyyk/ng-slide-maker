@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .directive('draggable', ['$document', function ($document) {
+  .directive('draggable', ['$document', 'canvas', function ($document, canvas) {
     var prex=0, prey=0, x = 0, y = 0;
 		return function(scope, element, attr) {
 			element.css({
@@ -34,8 +34,8 @@ angular.module('slidesGeneratorApp')
 					y += event.screenY-prey;
 				}
 				else {
-					x += (event.screenX-prex)/scope.canvas.scale;
-					y += (event.screenY-prey)/scope.canvas.scale;
+					x += (event.screenX-prex)/canvas.getCanvasScale();
+					y += (event.screenY-prey)/canvas.getCanvasScale();
 				}
 				prex = event.screenX;
 				prey = event.screenY;
