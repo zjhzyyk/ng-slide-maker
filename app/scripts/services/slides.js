@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .factory("slides", ['canvas', function(canvas){
+  .factory("slides", ['canvas', 'localStorage', function(canvas, localStorage){
   	function Component(opt){
       for (var prop in opt) {
         if (opt.hasOwnProperty(prop)) {
@@ -34,9 +34,9 @@ angular.module('slidesGeneratorApp')
       this.style={};
       this.toolbar = "slide"+this.index+"toolbar";
       // this.current = null;
-      this.background = "";
+      this.background = "<div style='background-color: white; border: 1px solid rgba(0, 0, 0, .3); border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, .1);'></div>";
     }
-    Slide.prototype.addTextBox = function (cx,cy){
+    Slide.prototype.addTextBox = function (cx,cy, w, h){
       console.log("add textbox in slide "+this.index);
       cx = cx || 0;
       cy = cy || 0;
@@ -47,8 +47,8 @@ angular.module('slidesGeneratorApp')
         content: "",
         x: cx || 0,
         y: cy || 0,
-        width: 210,
-        height: 20,
+        width: w || 210,
+        height: h || 20,
         frameStyle: {
           left: (cx*canvas.getCanvasScale())+"px",
           top: (cy*canvas.getCanvasScale())+"px",
@@ -97,6 +97,10 @@ angular.module('slidesGeneratorApp')
     };
 
     var cs = canvas.getCanvas();
+  	var slides = [];
+    var currentSlideId = -1;
+    var defaultSlideMargin = 30;
+    var addingNewSlide = false;
 
     var calcCenterCood = function(item){
       return {
@@ -105,28 +109,34 @@ angular.module('slidesGeneratorApp')
       };
     };
 
-  	var slides = [];
-    var currentSlideId = -1;
-    var defaultSlideMargin = 30;
+    var slideNum = function(){
+      return slides.length;
+    };
+
+    var isCurrentSlide = function(){
+      return (currentSlideId<0 || currentSlideId>=slideNum()) ? false : true;
+    };
+
+    var getCurrentSlide = function(){
+      return isCurrentSlide() ? slides[currentSlideId] : null;
+    };
 
   	return {
-      slideNum: function(){
-        return slides.length;
-      },
-      isCurrentSlide: function() {
-        return (currentSlideId<0 || currentSlideId>=this.slideNum()) ? false : true;
-      },
-      getCurrentSlide: function(){
-        return this.isCurrentSlide() ? slides[currentSlideId] : null;
-      },
+      slideNum: slideNum,
+      isCurrentSlide: isCurrentSlide,
+      getCurrentSlide: getCurrentSlide,
       getCurrentSlideId: function(){
         return currentSlideId;
+      },
+      getCurrentBackground: function(){
+        return (currentSlideId<0 || currentSlideId>=slideNum()) ? "" : slides[currentSlideId].background;
       },
       setCurrentSlideId: function(id) {
         currentSlideId = id;
       },
       addSlide: function(){
-        var snum = this.slideNum();
+        addingNewSlide = true;
+        var snum = slideNum();
         var slide = new Slide("", snum);
         slide.x = snum===0 ? calcCenterCood(slide).x : 
           slides[snum-1].x + slides[snum-1].width + defaultSlideMargin;
@@ -138,10 +148,13 @@ angular.module('slidesGeneratorApp')
           height: slide.height*cs.scale + "px"
         };
         if (currentSlideId!==-1 && currentSlideId<snum) {
-          this.getCurrentSlide().selected = false;
+          getCurrentSlide().selected = false;
         }
         currentSlideId = snum;
-        slide.selected = true;
+        // slide.selected = true;
+        var textboxWidthRatio = 0.8;
+        slide.addTextBox((1-textboxWidthRatio)/2*slide.width, 0.065*slide.height, textboxWidthRatio*slide.width);
+        slide.addTextBox((1-textboxWidthRatio)/2*slide.width, 0.065*slide.height+40, textboxWidthRatio*slide.width);
         slides.push(slide);
       },
       getAllSlides: function(){
@@ -149,6 +162,28 @@ angular.module('slidesGeneratorApp')
       },
       getSlideById: function(id) {
         return slides[id];
+      },
+      getSlidesFromLocal: function (){
+        var arr = localStorage.getSlides();
+        var len = arr.length;
+        var i = 0;
+        for (i=0;i<len;i++) {
+          arr[i].style.width = arr[i].width+'px';
+          arr[i].style.height = arr[i].height+'px';
+          arr[i].style.left = arr[i].x+'px';
+          arr[i].style.top = arr[i].y+'px';
+          arr[i] = angular.extend(new Slide(), arr[i]);
+        }
+        slides = arr;
+      },
+      isAddingNewSlide: function(){
+        return addingNewSlide;
+      },
+      setNewSlideFlag: function(flag) {
+        addingNewSlide = flag;
+      },
+      clearSlides: function(){
+        slides = [];
       }
   	};
   }]);

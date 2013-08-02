@@ -13,9 +13,9 @@ angular.module('slidesGeneratorApp')
         	child = $("<textarea id="+textid+" placeholder='input here...' autofocus rows='1'></textarea>");
         	child.appendTo(element);
         	editor = new wysihtml5.Editor(textid, { // id of textarea element
-          toolbar:      "slide"+scope.slide.index+"toolbar", // id of toolbar element
+          toolbar:      "toolbar", // id of toolbar element
           parserRules:  wysihtml5ParserRules, // defined in parser rules set 
-          stylesheets:  "components/wysihtml5/examples/css/stylesheet.css"
+          stylesheets:  "styles/wysihtml5-stylesheet.css"
         	});
           scope.component.textid = textid;
           iframe = $(editor.composer.iframe);

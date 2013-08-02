@@ -12,7 +12,7 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="styles/bootstrap.css">
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/font-awesome.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
@@ -43,9 +43,8 @@
           </li>
           <li><a>view</a></li>
           <li><a ng-click="present()">present</a></li>
-          <li>
-            <a ng-click="openSlideStyle()">style</a>
-          </li>
+          <li><a ng-click="openSlideStyle()">style</a></li>
+          <li><a ng-click="clearSlides()">clear</a></li>
         </ul>
 
         <ul class="nav pull-right">
@@ -55,7 +54,7 @@
     </div>
     
     <div class="canvas">  
-      <div id="backcolor"></div>
+      <div id="canvas-background"></div>
       <ul id="slideFrames">
         <li ng-repeat="slide in slides" class="recli" id="{{slide.index}}" ng-style="slide.style">
           <div class="rec" ng-show="slide.selected">
@@ -64,11 +63,7 @@
             <div class="rec-bl"></div>
             <div class="rec-br"></div>
           </div>
-          <div id="{{slide.toolbar}}" class="btn-group toolbar" style="display: none;">
-            <a data-wysihtml5-command="bold" class="btn"><i class="icon-bold"></i></a>
-            <a data-wysihtml5-command="italic" class="btn"><i class="icon-italic"></i></a>
-          </div>
-
+          
         </li>
       </ul>
       <ul id="mainCanvas" draggable>
@@ -94,6 +89,50 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="toolbar" class="btn-group toolbar" style="display: none;">
+        <a data-wysihtml5-command="bold" class="btn"><i class="icon-bold"></i></a>
+        <a data-wysihtml5-command="italic" class="btn"><i class="icon-italic"></i></a>
+        <a data-wysihtml5-command="underline" class="btn"><i class="icon-underline"></i></a>
+        <a data-wysihtml5-command="undo" class="btn"><i class="icon-undo"></i></a>
+        <a data-wysihtml5-command="redo" class="btn"><i class="icon-repeat"></i></a>
+        <div class="btn" id="font-family">
+          <span>
+            fonts
+          </span>
+          <ul class="dropdown-menu">
+          </ul>
+        </div>
+        <div class="btn" id="font-size">
+          <!-- <span class="dropdown-toggle"> -->
+          <span>
+            size
+          </span>
+          <ul class="dropdown-menu">
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="15">15px</a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="20">20px</a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="30">30px</a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="50">50px</a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="90">90px</a></li>
+          </ul>
+        </div>
+        <div class="btn" id="font-color">
+          <div ng-style="{{fontColorStyle}}"></div>
+          <ul class="dropdown-menu">
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="15"></a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="20"></a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="30"></a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="50"></a></li>
+            <li><a data-wysihtml5-command="fontSize" data-wysihtml5-command-value="90"></a></li>
+          </ul>
+        </div>
+        <a data-wysihtml5-command="justifyLeft" class="btn"><i class="icon-align-left"></i></a>
+        <a data-wysihtml5-command="justifyCenter" class="btn"><i class="icon-align-center"></i></a>
+        <a data-wysihtml5-command="justifyRight" class="btn"><i class="icon-align-right"></i></a>
+        <a data-wysihtml5-command="insertUnorderedList" class="btn"><i class="icon-list-ul"></i></a>
+        <a data-wysihtml5-command="insertOrderedList" class="btn"><i class="icon-list-ol"></i></a>
+        <a data-wysihtml5-command="" class="btn"><i class="icon-link"></i></a>
+        <a class="btn"><i class="icon-picture"></i></a>
       </div>
       <div id="sidebar" class="btn-group btn-group-vertical">
         <button class="btn" id="gohome"><i class="icon-home"></i></button>
@@ -134,7 +173,9 @@
     </div>
 
     <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;">
+      <div id="background" style="background: -webkit-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));"></div>
       <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute; border: 1px black solid;" class="pslide">
+        <div style='background-color: white; border: 1px solid rgba(0, 0, 0, .3); border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, .1);'></div>
         <div ng-repeat="component in slide.components" class="finalComponent" ng-style="component.getStyle()" style="position: absolute;">
         </div>
       </div>
@@ -228,13 +269,18 @@
       </script>
     </div>
 
+<!--     <div id="test">
+      <div class="point" id="sa"></div>
+      <div class="point" id="ca"></div>
+    </div> -->
+
     <script src="components/jquery/jquery.js"></script>
     <script src="components/angular/angular.js"></script>
     <script src="components/angular-resource/angular-resource.js"></script>
     <script src="components/angular-cookies/angular-cookies.js"></script>
     <script src="components/angular-sanitize/angular-sanitize.js"></script>
     <script src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
-    <script src="components/wysihtml5/parser_rules/advanced.js"></script>
+    <script src="scripts/wysihtml5-parser-rules.js"></script>
     <script src="components/wysihtml5/dist/wysihtml5-0.3.0.js"></script>
 
     <!-- build:js scripts/scripts.js -->

@@ -10,11 +10,25 @@ angular.module('slidesGeneratorApp')
 			return db.getItem(key);
 		};
 		return {
-			storePresentation: function(slidesArr) {
-				_set("presentation", JSON.stringify(slidesArr));
+			storeSlide: function(slides) {
+				_set("slides", JSON.stringify(slides));
 			},
-			getPresentation: function(){
-				return JSON.parse(_get("presentation"));
+			storeCanvas: function(canvas) {
+				_set("canvas", JSON.stringify(canvas));
+			},
+			getSlides: function(){
+				var result = _get("slides");
+				if (result===null)
+					return [];
+				else
+					return JSON.parse(result);
+			},
+			getCanvas: function(){
+				var result = _get("canvas");
+				if (result===null)
+					return {scale: 1};
+				else
+					return JSON.parse(result);
 			}
 		};
 	}]);
