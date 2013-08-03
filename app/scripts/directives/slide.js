@@ -41,10 +41,10 @@ angular.module('slidesGeneratorApp')
               // $("body").scope().current.selected = true;
               slides.getCurrentSlide().selected = true;
               // scope.$emit("show-toolbar");
-              var toolbar = $("#toolbar");
-              toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
-              toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
-              toolbar.show();
+              // var toolbar = $("#toolbar");
+              // toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
+              // toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
+              // toolbar.show();
               $("body").scope().$digest();
               unbindZoomend();
             };
@@ -139,11 +139,11 @@ angular.module('slidesGeneratorApp')
         //     $("#"+scope.slide.toolbar)[0].style.display = "block";
         //   }
         // });
-        scope.$watch(isMoving, function(newvalue){
-          if (newvalue) {
-            $("#toolbar").hide();
-          }
-        });
+        // scope.$watch(isMoving, function(newvalue){
+        //   // if (newvalue) {
+        //     // $("#toolbar").hide();
+        //   // }
+        // });
         scope.$on("onOpen", function(){
           if (index!==slides.getCurrentSlideId()) {
             // $("#"+scope.slide.toolbar)[0].style.display = "none"; 

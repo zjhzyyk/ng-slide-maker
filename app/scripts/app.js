@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('slidesGeneratorApp', ['ui.bootstrap'])
+angular.module('slidesGeneratorApp', ['ui.bootstrap', 'ui.tinymce'])
 	.run(['slides', '$rootScope', '$timeout', 'canvas', function (slides, $rootScope, $timeout, canvas) {
 		slides.getSlidesFromLocal();
 		// canvas.getStoredCanvas();

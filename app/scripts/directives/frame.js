@@ -7,17 +7,17 @@ angular.module('slidesGeneratorApp')
       terminal: true,
       link: function postLink(scope, element, attrs) {
         if (scope.component.type==="textbox") {
-          var frame = $("#"+scope.component.textid).parent().children("iframe");
+          // var frame = $("#"+scope.component.textid).parent().children("iframe");
           element.dblclick(function(){
             scope.component.frameStyle.display = "none";
             $("body").scope().$digest();
-            frame.contents().find('body').focus();
-            frame.css("width", scope.component.width+'px');
+            // frame.contents().find('body').focus();
+            // frame.css("width", scope.component.width+'px');
           });
           scope.$on("unselect-textbox", function(){
             scope.component.frameStyle.display = "none";
             $("body").scope().$$phase || $("body").scope().$digest();
-            frame.css("width", scope.component.width+'px');
+            // frame.css("width", scope.component.width+'px');
           });
         } else if (scope.component.type==="image") {
           scope.$on("unselect-image", function(){

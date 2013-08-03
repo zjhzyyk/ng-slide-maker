@@ -216,7 +216,7 @@ angular.module('slidesGeneratorApp')
           // ofy = canvas.getCanvasScale()*canvas.getCanvasHeight()/2 + ofy;
           var wr = 0.85;
           var hr = 0.85;
-          var reserve = 30;
+          var reserve = 0;
           var scale = canvas.getCanvasScale();
           var r1 = canvas.getCanvasWidth() * wr / slides.getSlideById(i).width / scale;
           var r2 = (canvas.getCanvasHeight()-reserve) * hr / slides.getSlideById(i).height / scale;
@@ -245,10 +245,10 @@ angular.module('slidesGeneratorApp')
         scope.$on("newSlide", function(){
           var afterZoom = function(){
             console.log("in afterZoom");
-            var toolbar = $("#toolbar");
-            toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
-            toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
-            toolbar.show();
+            // var toolbar = $("#toolbar");
+            // toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
+            // toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
+            // toolbar.show();
             unbindZoomend();
           };
           var unbindZoomend = scope.$on("zoomend", afterZoom);
