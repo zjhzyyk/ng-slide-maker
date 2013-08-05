@@ -30,6 +30,7 @@ angular.module('slidesGeneratorApp')
       this.height = 450;
       this.textnum = 0;
       this.imgnum = 0;
+      this.cnum = 0;
       this.components = [];
       this.style={};
       this.toolbar = "slide"+this.index+"toolbar";
@@ -43,7 +44,8 @@ angular.module('slidesGeneratorApp')
       // console.log("cx", cx, "cy", cy);
       this.components.push(new Component({
         type: "textbox",
-        id : this.textnum,
+        tid : this.textnum,
+        id: this.cnum,
         content: "",
         x: cx || 0,
         y: cy || 0,
@@ -60,14 +62,15 @@ angular.module('slidesGeneratorApp')
       }));
       // this.current = this.components[this.components.length-1];
       this.textnum++;
+      this.cnum++;
     };
     Slide.prototype.addImage = function(url, w, h) {
       console.log("add image in slide "+this.index);
-      this.imgnum++;
       var that = this;
       this.components.push(new Component({
         type: "image",
         content: url,
+        id: this.cnum,
         x: (that.width-w)/2,
         y: (that.height-h)/2,
         width: w,
@@ -80,6 +83,8 @@ angular.module('slidesGeneratorApp')
           display: "block"
         }
       }));
+      this.imgnum++;
+      this.cnum++;
     };
     Slide.prototype.getPosStyle = function () {
       return {

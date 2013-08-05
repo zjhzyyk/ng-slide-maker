@@ -168,7 +168,7 @@ ul.slide-style-list li {
 	width: 100%;
 }
 
-#font-size .dropdown-menu {
+/*#font-size .dropdown-menu {
 	min-width: 0;
 }
 
@@ -178,6 +178,21 @@ ul.slide-style-list li {
 
 #toolbar .btn:hover .dropdown-menu {
 	display: block;
+}*/
+
+.icon-resize-horizontal {
+	position: absolute;
+	display: none;
+}
+
+.icon-resize-horizontal#resize-left {
+	top: 5px;
+	left: -5px;
+}
+
+.icon-resize-horizontal#resize-right {
+	top: 5px;
+	right: -5px;
 }
 
 /*for test*/
