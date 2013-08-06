@@ -1,6 +1,5 @@
-/**
- * Binds a TinyMCE widget to <textarea> elements.
- */
+'use strict';
+
 angular.module('slidesGeneratorApp')
   .value('uiTinymceConfig', {
     plugins: ["advlist autolink autoresize contextmenu link lists paste searchreplace table textcolor"],
@@ -10,9 +9,10 @@ angular.module('slidesGeneratorApp')
     statusbar: false,
     inline: true
   })
-  .directive('uiTinymce', ['uiTinymceConfig', function (uiTinymceConfig) {
+  .directive('uiTinymce', ['uiTinymceConfig', '$document', 'slides', 'canvas', function (uiTinymceConfig, $document, slides, canvas) {
     uiTinymceConfig = uiTinymceConfig || {};
     var generatedIds = 0;
+    var prex, prey, c, inmove = false;
     return {
       require: 'ngModel',
       link: function (scope, elm, attrs, ngModel) {
@@ -22,6 +22,24 @@ angular.module('slidesGeneratorApp')
         var IDLE_MODE = 2;
         // state = IDLE_MODE;
         // generate an ID if not present
+        c = slides.getSlideById(scope.slide.index).components[scope.component.id];
+        function mousemove(e){
+          inmove = true;
+          e.preventDefault();
+          e.stopPropagation();
+          c.x += (e.screenX-prex) / canvas.getCanvasScale();
+          c.y += (e.screenY-prey) / canvas.getCanvasScale();
+          elm.parent()[0].style.left = c.x+'px';
+          elm.parent()[0].style.top = c.y+'px';
+          prex = e.screenX;
+          prey = e.screenY;
+        }
+        function mouseup(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          $document.unbind('mousemove', mousemove);
+          $document.unbind('mouseup', mouseup);
+        }
         if (!attrs.id) {
           attrs.$set('id', 'uiTinymce' + generatedIds++);
         }
@@ -53,29 +71,38 @@ angular.module('slidesGeneratorApp')
             ed.on('mousedown', function(e){
               e.preventDefault();
               e.stopPropagation();
-              ed.state = (ed.state===IDLE_MODE) ? MOVE_MODE : EDIT_MODE;
-              console.log("mousedown on text");
-              switch (ed.state) {
-                case MOVE_MODE: 
-                  var ednum = tinymce.editors.length;
-                  for (var ei = 0; ei<ednum; ei++) {
-                    document.getElementById(tinymce.editors[ei].id).style.border = "none";
-                    tinymce.editors[ei].state = IDLE_MODE;
-                  }
-                  $(".icon-resize-horizontal").each(function(){
-                    this.style.display = "none";
-                  });
-                  tinymce.activeEditor.fire("blur");
-                  ed.state = MOVE_MODE;
-                  // elm.blur();
-                  elm[0].style.border = "1px #318BFF solid";
-                  elm.parent().children(".icon-resize-horizontal").show();
-                  break;
-                case EDIT_MODE: 
-                  elm[0].style.border = "none";
-                  elm.parent().children(".icon-resize-horizontal").hide();
-                  ed.focus();
-                  break;
+              if (ed.state===MOVE_MODE) {
+                inmove = false;
+                prex = e.screenX;
+                prey = e.screenY;
+                c.x = parseFloat(elm.parent().css("left"));
+                c.y = parseFloat(elm.parent().css("top"));
+                $document.bind('mousemove', mousemove);
+                $document.bind('mouseup', mouseup);
+              }
+            });
+            ed.on('mouseup', function(){
+              if (ed.state===IDLE_MODE) {
+                ed.state = MOVE_MODE; 
+                var ednum = tinymce.editors.length;
+                for (var ei = 0; ei<ednum; ei++) {
+                  document.getElementById(tinymce.editors[ei].id).style.border = "none";
+                  tinymce.editors[ei].state = IDLE_MODE;
+                }
+                $(".icon-resize-horizontal").each(function(){
+                  this.style.display = "none";
+                });
+                tinymce.activeEditor.fire("blur");
+                ed.state = MOVE_MODE;
+                // elm.blur();
+                elm[0].style.border = "1px #318BFF solid";
+                elm.parent().children(".icon-resize-horizontal").show();
+              }
+              else if (inmove===false && ed.state===MOVE_MODE) {
+                ed.state = EDIT_MODE;
+                elm[0].style.border = "none";
+                elm.parent().children(".icon-resize-horizontal").hide();
+                ed.focus();
               }
             });
             ed.on('blur', function(){

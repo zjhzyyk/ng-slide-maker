@@ -74,15 +74,15 @@ angular.module('slidesGeneratorApp')
             scope.component.frameStyle.display = "block";
             $("body").scope().$digest();
           });
+          scope.$watch("component.x", function(){
+            element[0].style.left = scope.component.x+'px';
+          });
+          scope.$watch("component.y", function(){
+            element[0].style.top = scope.component.y+'px';
+          });
         }
         element[0].style.left = scope.component.x+'px';
         element[0].style.top = scope.component.y+'px';
-        scope.$watch("component.x", function(){
-          element[0].style.left = scope.component.x+'px';
-        });
-        scope.$watch("component.y", function(){
-          element[0].style.top = scope.component.y+'px';
-        });
       }
     };
   }]);

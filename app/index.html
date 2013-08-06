@@ -128,10 +128,10 @@
       </div>
     </div>
 
-    <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;">
-      <div id="background" style="background: -webkit-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));"></div>
-      <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute; border: 1px black solid;" class="pslide">
-        <div style='background-color: white; border: 1px solid rgba(0, 0, 0, .3); border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, .1);'></div>
+    <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;width: 100%; height: 100%;">
+      <div id="background" style="width: 100%; height: 100%; background: -webkit-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));"></div>
+      <div ng-repeat="slide in slides" ng-style="slide.getStyle()" style="position: absolute;" class="pslide">
+        <div style='background-color: white; border: 1px solid rgba(0, 0, 0, .3); border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, .1); height: 100%;'></div>
         <div ng-repeat="component in slide.components" class="finalComponent" ng-style="component.getStyle()" style="position: absolute;">
         </div>
       </div>
