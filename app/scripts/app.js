@@ -8,7 +8,7 @@ angular.module('slidesGeneratorApp', ['ui.bootstrap'])
 			slides.addSlide();
 		}
 		slides.setCurrentSlideId(0);
-		console.log("finish run method");
+		// console.log("finish run method");
 
 		$timeout(function(){
 			$rootScope.$broadcast("onOpen");

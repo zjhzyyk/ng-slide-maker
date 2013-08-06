@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('slidesGeneratorApp')
-  .controller('MainCtrl', ['$scope', 'localStorage', 'slides', 'canvas', function ($scope, localStorage, slides, canvas) {
+  .controller('MainCtrl', ['$scope', 'localStorage', 'slides', 'canvas', '$timeout', function ($scope, localStorage, slides, canvas, $timeout) {
     $scope.dragScale = true;
     
     $scope.$watch(slides.getAllSlides, function(newvalue){
       localStorage.storeSlide(newvalue);
       $scope.slides = newvalue;
-      // console.log(localStorage.getPresentation());
+      console.log(localStorage.getSlides());
     }, true);
 
     // $scope.$watch(canvas.storeItems, function(newvalue){
@@ -17,7 +17,10 @@ angular.module('slidesGeneratorApp')
     $scope.slides = slides.getAllSlides();
 
     $scope.present = function(){
+      // $scope.$digest();
+      // $timeout(function (){
       $scope.$broadcast("present");
+      // });
     };
     $scope.openSlideStyle = function(){
       $scope.$broadcast("openSlideStyle");

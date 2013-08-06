@@ -14,8 +14,9 @@ angular.module('slidesGeneratorApp')
     var generatedIds = 0;
     var prex, prey, c, inmove = false;
     return {
-      require: 'ngModel',
-      link: function (scope, elm, attrs, ngModel) {
+      // require: 'ngModel',
+      // link: function (scope, elm, attrs, ngModel) {
+      link: function (scope, elm, attrs) {
         var expression, options, tinyInstance, state;
         var EDIT_MODE = 0;
         var MOVE_MODE = 1;
@@ -47,14 +48,16 @@ angular.module('slidesGeneratorApp')
           // Update model when calling setContent (such as from the source editor popup)
           setup: function (ed) {
             ed.on('init', function(args) {
-              ngModel.$render();
+              // ngModel.$render();
+              ed.setContent(c.content || "click here to input");
               elm.blur();
               ed.state = IDLE_MODE;
             });
             // Update model on button click
             ed.on('ExecCommand', function (e) {
               // ed.save();
-              ngModel.$setViewValue(elm.val());
+              // ngModel.$setViewValue(elm.val());
+              c.content = elm.html();
               if (!scope.$$phase) {
                 scope.$apply();
               }
@@ -63,7 +66,8 @@ angular.module('slidesGeneratorApp')
             ed.on('KeyUp', function (e) {
               // console.log(ed.isDirty());
               // ed.save();
-              ngModel.$setViewValue(elm.val());
+              // ngModel.$setViewValue(elm.val());
+              c.content = elm.html();
               if (!scope.$$phase) {
                 scope.$apply();
               }
@@ -120,7 +124,7 @@ angular.module('slidesGeneratorApp')
         }
         angular.extend(options, uiTinymceConfig, expression);
         // setTimeout(function () {
-          tinymce.init(options);
+        tinymce.init(options);
         // });
 
         // $timeout(function(){
@@ -128,14 +132,14 @@ angular.module('slidesGeneratorApp')
         //   // $document.focus();
         // }, 1000);
 
-        ngModel.$render = function() {
-          if (!tinyInstance) {
-            tinyInstance = tinymce.get(attrs.id);
-          }
-          if (tinyInstance) {
-            tinyInstance.setContent(ngModel.$viewValue || 'Please input');
-          }
-        };
+        // ngModel.$render = function() {
+        //   if (!tinyInstance) {
+        //     tinyInstance = tinymce.get(attrs.id);
+        //   }
+        //   if (tinyInstance) {
+        //     tinyInstance.setContent(ngModel.$viewValue || 'Please input');
+        //   }
+        // };
       }
     };
   }]);

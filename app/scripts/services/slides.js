@@ -171,12 +171,16 @@ angular.module('slidesGeneratorApp')
       getSlidesFromLocal: function (){
         var arr = localStorage.getSlides();
         var len = arr.length;
-        var i = 0;
+        var i = 0, i2 = 0, j;
         for (i=0;i<len;i++) {
           arr[i].style.width = arr[i].width+'px';
           arr[i].style.height = arr[i].height+'px';
           arr[i].style.left = arr[i].x+'px';
           arr[i].style.top = arr[i].y+'px';
+          i2 = arr[i].components.length;
+          for (j=0; j<i2; j++) {
+            arr[i].components[j] = angular.extend(new Component({}), arr[i].components[j]);
+          }
           arr[i] = angular.extend(new Slide(), arr[i]);
         }
         slides = arr;

@@ -11,7 +11,8 @@ angular.module('slidesGeneratorApp')
         if (scope.component.type==="textbox") {
           scope.$emit("unselect-all-text");
           textid = "slide"+scope.slide.index+"text"+scope.component.tid;
-        	text = $compile("<div ui-tinymce ng-model='tinymceModel'></div>")(scope);
+        	// text = $compile("<div ui-tinymce ng-model='tinymceModel'></div>")(scope);
+          text = $compile("<div ui-tinymce></div>")(scope);
         	element.append(text);
           resizeLeft = $("<i class='icon-resize-horizontal' id='resize-left'></i>");
           resizeRight = $("<i class='icon-resize-horizontal' id='resize-right'></i>");

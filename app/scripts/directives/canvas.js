@@ -228,11 +228,11 @@ angular.module('slidesGeneratorApp')
           ffx = off.left+(canvas.getCanvasWidth()-scale*slides.getSlideById(i).width)/2;
           ffy = off.top+(canvas.getCanvasHeight()-reserve-scale*slides.getSlideById(i).height)/2 + reserve;
           console.log("scale", scale);
-          console.log("slide actual x", ffx, "slide actual y", ffy);
+          // console.log("slide actual x", ffx, "slide actual y", ffy);
           $("#test #sa").css({left: ffx+'px', top: ffy+'px'});
           ffx -= slides.getSlideById(i).x * scale;
           ffy -= slides.getSlideById(i).y * scale;
-          console.log("maincanvas actual x", ffx, "maincanvas actual y", ffy);
+          // console.log("maincanvas actual x", ffx, "maincanvas actual y", ffy);
           $("#test #ca").css({left: ffx+'px', top: ffy+'px'});
           tx = (ffx-ox)/scale;
           ty = (ffy-oy)/scale;
@@ -244,7 +244,7 @@ angular.module('slidesGeneratorApp')
         }
         scope.$on("newSlide", function(){
           var afterZoom = function(){
-            console.log("in afterZoom");
+            // console.log("in afterZoom");
             // var toolbar = $("#toolbar");
             // toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
             // toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
@@ -261,6 +261,7 @@ angular.module('slidesGeneratorApp')
           scope.$broadcast("unselect-image");
         });
         scope.$on("present", function(){
+          // $("body").scope().$digest();
           var present = $window.open("index.html?presentation=true");
           present.onload = function(){
             (present.document.getElementsByTagName("html")[0]).innerHTML = 
@@ -274,7 +275,7 @@ angular.module('slidesGeneratorApp')
             "    <meta name='viewport' content='width=device-width'>"+
             "  </head>"+
             "  <body style='overflow:hidden;margin:0; padding:0;'>"+
-            $('#presentation')[0].outerHTML+
+            $('#main')[0].innerHTML+
             "  </body>"+
             "</html>";
             present.presentation();
