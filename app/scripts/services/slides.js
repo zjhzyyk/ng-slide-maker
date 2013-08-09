@@ -193,6 +193,39 @@ angular.module('slidesGeneratorApp')
       },
       clearSlides: function(){
         slides = [];
+      },
+      getMainFrame: function(){
+        var l = slideNum();
+        if (l<1) {
+          return {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+          };
+        }
+        var i = 1;
+        var minx, miny, maxx, maxy;
+        minx = slides[0].x;
+        miny = slides[0].y;
+        maxx = minx + slides[0].width;
+        maxy = minx + slides[0].height;
+        for (;i<l; i++) {
+          if (minx > slides[i].x)
+            minx = slides[i].x;
+          if (miny > slides[i].y)
+            miny = slides[i].y;
+          if (maxx < slides[i].x+slides[i].width)
+            maxx = slides[i].x+slides[i].width;
+          if (maxy < slides[i].y+slides[i].height)
+            maxy = slides[i].y+slides[i].height;
+        }
+        return {
+          x: minx,
+          y: miny,
+          w: maxx - minx,
+          h: maxy - miny
+        };
       }
   	};
   }]);

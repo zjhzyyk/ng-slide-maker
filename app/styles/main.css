@@ -195,6 +195,14 @@ ul.slide-style-list li {
 	right: -5px;
 }
 
+p {
+	margin: 0;
+}
+
+p+p {
+	margin-top: 10px;
+}
+
 /*for test*/
 .point{
 	position: fixed;

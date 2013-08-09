@@ -130,103 +130,25 @@
 
     <div id="main">
 
-    <div id="background" style="width: 100%; height: 100%; background: -webkit-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190)); position: fixed;"></div>
+    <div id="background"></div>
 
-    <div id="presentation" style="position: absolute; -webkit-transition: -webkit-transform 0.5s linear; -moz-transition: -moz-transform 0.5s linear; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;width: 100%; height: 100%;">
+    <div id="presentation">
       
-      <div ng-repeat="slide in slides" style="position: absolute;" class="pslide">
+      <div ng-repeat="slide in slides" class="pslide">
         <div style='background-color: white; border: 1px solid rgba(0, 0, 0, .3); border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, .1); height: 100%;'></div>
-        <div ng-repeat="component in slide.components" class="finalComponent" style="position: absolute;">
+        <div ng-repeat="component in slide.components" class="finalComponent">
         </div>
       </div>
+      <script src="scripts/prezi.js"></script>
       <script type="text/javascript">
-        function presentation(){
-          var present = document.getElementById("presentation");
-          var slidesElements = document.getElementsByClassName("pslide");
-          var slidesNum = slidesElements.length;
-          var i = 0;
-          var slides = [];
-          var Slide = function(x,y,w,h){
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
-          };
-          var cur = 0;
-          var canvas = {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            scale: 1
-          };
-          present.style.webkitTransformOrigin = canvas.width/2 + 'px ' + canvas.height/2 + 'px';
-          var translate="";
-          for (;i<slidesNum; i++) {
-            slides.push(new Slide(
-              parseFloat(slidesElements[i].style.left),
-              parseFloat(slidesElements[i].style.top),
-              parseFloat(slidesElements[i].style.width),
-              parseFloat(slidesElements[i].style.height)
-              )
-            );
-          }
-          document.onkeydown = function(e) {
-            if (e.keyCode == 39 ||
-                e.keyCode == 13) {
-              next();
-            } else if (e.keyCode == 37) {
-              prev();
-            }
-          };
-          document.onclick = function(e) {
-            next();
-          }
-          function next(){
-            if (cur+1<slidesNum) {
-              moveto(cur+1);
-              cur++;
-            }
-          }
-          function prev(){
-            if(cur-1>=0) {
-              moveto(cur-1);
-              cur--;
-            }
-          }
-          function moveto(i){
-            if (i<0 || i>=slidesNum) return;
-            console.log("in moveto "+i);
-            var ofx = present.getBoundingClientRect().left,
-            ofy = present.getBoundingClientRect().top,
-            ox = canvas.width/2 +ofx,
-            oy = canvas.height/2+ofy;
-            var wr = 0.85;
-            var hr = 0.85;
-            var r1 = canvas.width * wr / slides[i].width / canvas.scale;
-            var r2 = canvas.height * hr / slides[i].height / canvas.scale;
-            var r = Math.min(r1,r2),
-            ffx = ofx + (canvas.width-r*slides[i].width*canvas.scale)/2,
-            ffy = ofy + (canvas.height-r*slides[i].height*canvas.scale)/2;
-            canvas.scale *= r;
-            var afx = canvas.scale*(ofx-ox)+ox,
-            afy = canvas.scale*(ofy-oy)+oy;
-            ffx -= slides[i].x * canvas.scale;
-            ffy -= slides[i].y * canvas.scale;
-            var tx = (ffx-afx)/canvas.scale,
-            ty = (ffy-afy)/canvas.scale;
-            translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
-            zoomin(null, false);
-          }
-          function zoomin(event, change) {
-            //first unbind all zoom events
-            if (change===undefined || change===true || change===null) canvas.scale *= ratio;
-            var transform = "scale(" + canvas.scale + ") "+ translate;
-            present.style.webkitTransform = transform;
-            //after zooming finishes, bind back all zoom events
-          }
-          moveto(0);
-        };
-        presentation();
+        prezi.init();
       </script>
+    </div>
+
+    <div id="sidebar" class="btn-group btn-group-vertical">
+      <button class="btn" id="gohome"><img src="img/glyphicons_020_home.png"></button>
+      <button class="btn" id="zoomin"><img src="img/glyphicons_236_zoom_in.png"></button>
+      <button class="btn" id="zoomout"><img src="img/glyphicons_237_zoom_out.png"></button>
     </div>
 
     </div>

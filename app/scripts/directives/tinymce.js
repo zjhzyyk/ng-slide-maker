@@ -12,11 +12,11 @@ angular.module('slidesGeneratorApp')
   .directive('uiTinymce', ['uiTinymceConfig', '$document', 'slides', 'canvas', function (uiTinymceConfig, $document, slides, canvas) {
     uiTinymceConfig = uiTinymceConfig || {};
     var generatedIds = 0;
-    var prex, prey, c, inmove = false;
     return {
       // require: 'ngModel',
       // link: function (scope, elm, attrs, ngModel) {
       link: function (scope, elm, attrs) {
+        var prex, prey, c, inmove = false;
         var expression, options, tinyInstance, state;
         var EDIT_MODE = 0;
         var MOVE_MODE = 1;
@@ -73,8 +73,10 @@ angular.module('slidesGeneratorApp')
               }
             });
             ed.on('mousedown', function(e){
-              e.preventDefault();
               e.stopPropagation();
+              if (ed.state!==EDIT_MODE) {
+                e.preventDefault();
+              }
               if (ed.state===MOVE_MODE) {
                 inmove = false;
                 prex = e.screenX;

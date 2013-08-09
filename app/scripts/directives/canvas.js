@@ -134,6 +134,7 @@ angular.module('slidesGeneratorApp')
         }
         element.find("#zoomin").bind("mousedown", zoominDefault);
         element.find("#zoomout").bind("mousedown", zoomoutDefault);
+        element.find("#gohome").bind("mousedown", gohome);
         function zoominDefault(event) {
           event.preventDefault();
           event.stopPropagation();
@@ -206,9 +207,18 @@ angular.module('slidesGeneratorApp')
           $('#slideFrames').css("top", newvalue+'px');
           $('#frames').css("top", newvalue+'px');
         });
+        function gohome(){
+          var frame = slides.getMainFrame();
+          if (frame.w===0 || frame.h===0) return;
+          moveToRec(frame.x, frame.y, frame.w, frame.h);
+        }
         function moveto(i){
           if (i<0) return;
           console.log("in moveto "+i);
+          var si = slides.getSlideById(i);
+          moveToRec(si.x, si.y, si.width, si.height);
+        }
+        function moveToRec(x,y,w,h){
           off = element.offset();
           ox = off.left + canvas.getCanvasLeft();
           oy = off.top + canvas.getCanvasTop();
@@ -218,22 +228,18 @@ angular.module('slidesGeneratorApp')
           var hr = 0.85;
           var reserve = 0;
           var scale = canvas.getCanvasScale();
-          var r1 = canvas.getCanvasWidth() * wr / slides.getSlideById(i).width / scale;
-          var r2 = (canvas.getCanvasHeight()-reserve) * hr / slides.getSlideById(i).height / scale;
+          var r1 = canvas.getCanvasWidth() * wr / w / scale;
+          var r2 = (canvas.getCanvasHeight()-reserve) * hr / h / scale;
           var r = Math.min(r1,r2);
           canvas.getCanvas().scale *= r;
           scale = canvas.getCanvasScale();
           // afx = scale*(ofx-ox)+ox;
           // afy = scale*(ofy-oy)+oy;
-          ffx = off.left+(canvas.getCanvasWidth()-scale*slides.getSlideById(i).width)/2;
-          ffy = off.top+(canvas.getCanvasHeight()-reserve-scale*slides.getSlideById(i).height)/2 + reserve;
+          ffx = off.left+(canvas.getCanvasWidth()-scale*w)/2;
+          ffy = off.top+(canvas.getCanvasHeight()-reserve-scale*h)/2 + reserve;
           console.log("scale", scale);
-          // console.log("slide actual x", ffx, "slide actual y", ffy);
-          $("#test #sa").css({left: ffx+'px', top: ffy+'px'});
-          ffx -= slides.getSlideById(i).x * scale;
-          ffy -= slides.getSlideById(i).y * scale;
-          // console.log("maincanvas actual x", ffx, "maincanvas actual y", ffy);
-          $("#test #ca").css({left: ffx+'px', top: ffy+'px'});
+          ffx -= x * scale;
+          ffy -= y * scale;
           tx = (ffx-ox)/scale;
           ty = (ffy-oy)/scale;
           translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
@@ -262,23 +268,24 @@ angular.module('slidesGeneratorApp')
         });
         scope.$on("present", function(){
           // $("body").scope().$digest();
-          var present = $window.open("index.html?presentation=true");
+          var present = $window.open("presentation.html");
           present.onload = function(){
-            (present.document.getElementsByTagName("html")[0]).innerHTML = 
-            "<!doctype html>"+
-            "<html>"+
-            "  <head>"+
-            "    <meta charset='utf-8'>"+
-            "    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>"+
-            "    <title>presentation</title>"+
-            "    <meta name='description' content=''>"+
-            "    <meta name='viewport' content='width=device-width'>"+
-            "  </head>"+
-            "  <body style='overflow:hidden;margin:0; padding:0;'>"+
-            $('#main')[0].innerHTML+
-            "  </body>"+
-            "</html>";
-            present.presentation();
+            (present.document.getElementsByTagName("body")[0]).innerHTML = $('#main')[0].innerHTML;
+            // "<!doctype html>"+
+            // "<html>"+
+            // "  <head>"+
+            // "    <meta charset='utf-8'>"+
+            // "    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>"+
+            // "    <title>presentation</title>"+
+            // "    <meta name='description' content=''>"+
+            // "    <meta name='viewport' content='width=device-width'>"+
+            // "  </head>"+
+            // "  <body style='overflow:hidden;margin:0; padding:0;'>"+
+            // $('#main')[0].innerHTML+
+            // "  </body>"+
+            // "</html>";
+            // present.presentation();
+            present.prezi.init();
           };
         });
         scope.$on("moveto", function(e, id){
