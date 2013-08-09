@@ -1,4 +1,4 @@
-var prezi = window.prezi = (function(document, window, undefined){
+window.prezi = (function(document, window, undefined){
   var slides = [];
   var present;
   var translate="";
@@ -24,21 +24,7 @@ var prezi = window.prezi = (function(document, window, undefined){
   }
   function moveto(i){
     if (i<0 || i>=slidesNum) return;
-    console.log("in moveto "+i);
-    // var wr = 0.85;
-    // var hr = 0.85;
-    // var r1 = canvas.width * wr / slides[i].width / canvas.scale;
-    // var r2 = canvas.height * hr / slides[i].height / canvas.scale;
-    // var r = Math.min(r1,r2);
-    // canvas.scale *= r;
-    // var ffx = canvas.ox + (canvas.width-slides[i].width*canvas.scale)/2;
-    // var ffy = canvas.oy + (canvas.height-slides[i].height*canvas.scale)/2;
-    // ffx -= slides[i].x * canvas.scale;
-    // ffy -= slides[i].y * canvas.scale;
-    // var tx = (ffx-canvas.ox)/canvas.scale,
-    // ty = (ffy-canvas.oy)/canvas.scale;
-    // translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
-    // zoomin(null, false);
+    // console.log("in moveto "+i);
     zoomToRec(slides[i].x, slides[i].y, slides[i].width, slides[i].height);
   }
   function zoomin(event, change) {
@@ -78,8 +64,8 @@ var prezi = window.prezi = (function(document, window, undefined){
       ffx = (cfx-cx)/ratio+cx;
       ffy = (cfy-cy)/ratio+cy;
     }
-    var tx = (ffx-ofx)/canvas.scale;
-    var ty = (ffy-ofy)/canvas.scale;
+    var tx = (ffx-canvas.ox)/canvas.scale;
+    var ty = (ffy-canvas.oy)/canvas.scale;
     translate = "translate("+tx.toFixed(10)+"px,"+ty.toFixed(10)+"px)";
     zoomin(null, false);
   }
@@ -103,7 +89,6 @@ var prezi = window.prezi = (function(document, window, undefined){
         ox: present.getBoundingClientRect().left,
         oy: present.getBoundingClientRect().top
       };
-      
       for (;i<slidesNum; i++) {
         slides.push(new Slide(
           parseFloat(slidesElements[i].style.left),
@@ -135,14 +120,35 @@ var prezi = window.prezi = (function(document, window, undefined){
         };
       }
       if (option.sidebar===true) {
-        document.getElementById("zoomin").onclick = function() {
-          zoomToPoint(1, canvas.x+canvas.width/2, canvas.y+canvas.height/2);
+        document.getElementById("zoomin").onclick = function(e) {
+          e.stopPropagation();
+          zoomToPoint(1, canvas.ox+canvas.width/2, canvas.oy+canvas.height/2);
         };
-        document.getElementById("zoomout").onclick = function() {
-          zoomToPoint(-1, canvas.x+canvas.width/2, canvas.y+canvas.height/2);
+        document.getElementById("zoomout").onclick = function(e) {
+          e.stopPropagation();
+          zoomToPoint(-1, canvas.ox+canvas.width/2, canvas.oy+canvas.height/2);
         };
-        document.getElementById("gohome").onclick = function() {
-
+        document.getElementById("gohome").onclick = function(e) {
+          e.stopPropagation();
+          if (slidesNum<1) return;
+          var minx = slides[0].x, 
+              miny = slides[0].y, 
+              maxx = minx + slides[0].width, 
+              maxy = miny + slides[0].height, 
+              width, height;
+          for (var it = 1; it<slidesNum; it++) {
+            if (minx > slides[it].x)
+              minx = slides[it].x;
+            if (miny > slides[it].y)
+              miny = slides[it].y;
+            if (maxx < slides[it].x+slides[it].width)
+              maxx = slides[it].x+slides[it].width;
+            if (maxy < slides[it].y+slides[it].height)
+              maxy = slides[it].y+slides[it].height;
+          }
+          width = maxx - minx;
+          height = maxy - miny;
+          zoomToRec(minx, miny, width, height);
         }
       }
       moveto(0);

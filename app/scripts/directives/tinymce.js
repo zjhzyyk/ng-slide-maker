@@ -3,7 +3,7 @@
 angular.module('slidesGeneratorApp')
   .value('uiTinymceConfig', {
     plugins: ["advlist autolink autoresize contextmenu link lists paste searchreplace table textcolor"],
-    toolbar: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | fontselect fontsizeselect forecolor backcolor | bullist numlist outdent indent | link",
+    toolbar: "undo redo | bold italic underline | fontsizeselect forecolor backcolor | bullist link",
     menubar: false,
     fontsize_formats: "15pt 20pt 30pt 40pt 50pt 90pt 170pt",
     statusbar: false,

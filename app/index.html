@@ -57,13 +57,13 @@
       <div id="canvas-background"></div>
       <ul id="slideFrames">
         <li ng-repeat="slide in slides" class="recli" id="{{slide.index}}" ng-style="slide.style">
-          <div class="rec" ng-show="slide.selected">
+          <!-- <div class="rec" ng-show="slide.selected"> -->
+          <div class="rec" ng-show="false">
             <div class="rec-tl"></div>
             <div class="rec-tr"></div>
             <div class="rec-bl"></div>
             <div class="rec-br"></div>
           </div>
-          
         </li>
       </ul>
       <ul id="mainCanvas" draggable>
