@@ -40,6 +40,7 @@ angular.module('slidesGeneratorApp')
           e.stopPropagation();
           $document.unbind('mousemove', mousemove);
           $document.unbind('mouseup', mouseup);
+          $("body").scope().$digest();
         }
         if (!attrs.id) {
           attrs.$set('id', 'uiTinymce' + generatedIds++);

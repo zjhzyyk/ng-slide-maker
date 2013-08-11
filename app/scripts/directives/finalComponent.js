@@ -19,8 +19,9 @@ angular.module('slidesGeneratorApp')
         angular.forEach(scope.c.getStyle(), function(val, key){
           element.css(key, val);
         });
-        scope.$watch(scope.c.getStyle, function(newvalue){
-          angular.forEach(newvalue, function(val, key){
+        // console.log(scope.component.getStyle);
+        scope.$watch("component", function(){
+          angular.forEach(scope.component.getStyle(), function(val, key){
             element.css(key, val);
           });
         }, true);

@@ -205,6 +205,14 @@ ul.slide-style-list li {
 	display: none;
 }
 
+p {
+	margin: 0;
+}
+
+p+p {
+	margin: 10px 0 0;
+}
+
 .theme-color-asphalt-orange{
 background:#415b77;
 background:-moz-radial-gradient(center, circle cover, #415b77 0%, #2c3e50 100%);
