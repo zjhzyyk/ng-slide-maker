@@ -2,14 +2,14 @@
 
 angular.module('slidesGeneratorApp')
   .value('uiTinymceConfig', {
-    plugins: ["advlist autolink autoresize contextmenu link lists paste searchreplace table textcolor"],
-    toolbar: "undo redo | bold italic underline | fontsizeselect forecolor backcolor | bullist link",
+    plugins: ["advlist autolink contextmenu link lists paste searchreplace table textcolor"],
+    toolbar: "undo redo | bold italic underline | fontsizeselect forecolor | bullist numlist link",
     menubar: false,
     fontsize_formats: "15pt 20pt 30pt 40pt 50pt 90pt 170pt",
     statusbar: false,
     inline: true
   })
-  .directive('uiTinymce', ['uiTinymceConfig', '$document', 'slides', 'canvas', function (uiTinymceConfig, $document, slides, canvas) {
+  .directive('uiTinymce', ['uiTinymceConfig', '$document', 'slides', 'canvas', '$timeout', function (uiTinymceConfig, $document, slides, canvas, $timeout) {
     uiTinymceConfig = uiTinymceConfig || {};
     var generatedIds = 0;
     return {
@@ -44,6 +44,7 @@ angular.module('slidesGeneratorApp')
         if (!attrs.id) {
           attrs.$set('id', 'uiTinymce' + generatedIds++);
         }
+        c.textid = attrs.id;
         options = {
           // Update model when calling setContent (such as from the source editor popup)
           setup: function (ed) {
@@ -74,6 +75,10 @@ angular.module('slidesGeneratorApp')
             });
             ed.on('mousedown', function(e){
               e.stopPropagation();
+              scope.$emit("unselect-all-image");
+              if (slides.getCurrentSlideId()!==scope.slide.index || scope.fit === false) {
+                scope.$emit("moveto", scope.slide.index);
+              }
               if (ed.state!==EDIT_MODE) {
                 e.preventDefault();
               }
@@ -87,7 +92,9 @@ angular.module('slidesGeneratorApp')
                 $document.bind('mouseup', mouseup);
               }
             });
-            ed.on('mouseup', function(){
+            ed.on('mouseup', function(e){
+              e.stopPropagation();
+              $document.trigger("mouseup");
               if (ed.state===IDLE_MODE) {
                 ed.state = MOVE_MODE; 
                 var ednum = tinymce.editors.length;
@@ -111,7 +118,7 @@ angular.module('slidesGeneratorApp')
                 ed.focus();
               }
             });
-            ed.on('blur', function(){
+            ed.on('blur', function(e){
               ed.state = IDLE_MODE;
               elm.blur();
             });
@@ -125,23 +132,9 @@ angular.module('slidesGeneratorApp')
           expression = {};
         }
         angular.extend(options, uiTinymceConfig, expression);
-        // setTimeout(function () {
-        tinymce.init(options);
-        // });
-
-        // $timeout(function(){
-        //   elm.blur();
-        //   // $document.focus();
-        // }, 1000);
-
-        // ngModel.$render = function() {
-        //   if (!tinyInstance) {
-        //     tinyInstance = tinymce.get(attrs.id);
-        //   }
-        //   if (tinyInstance) {
-        //     tinyInstance.setContent(ngModel.$viewValue || 'Please input');
-        //   }
-        // };
+        $timeout(function(){
+          tinymce.init(options);
+        });
       }
     };
   }]);

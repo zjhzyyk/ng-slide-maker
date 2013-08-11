@@ -21,12 +21,8 @@ angular.module('slidesGeneratorApp')
         var empty = function(){};
         var newwidth=0;
         var newheight=0;
-        // scope.canvas.width = $window.innerWidth-element.offset().left;
-        // scope.canvas.height = $window.innerHeight-element.offset().top;
         canvas.setCanvasWidth($window.innerWidth-element.offset().left);
         canvas.setCanvasHeight($window.innerHeight-element.offset().top);
-        // var ox = scope.canvas.width/2;
-        // var oy = scope.canvas.height/2;
         var ox = canvas.getCanvasWidth()/2;
         var oy = canvas.getCanvasHeight()/2;
         var translate = "";
@@ -34,19 +30,21 @@ angular.module('slidesGeneratorApp')
         // element.children("#mainCanvas").css("-webkit-transform-origin", ox+'px '+oy+'px');
         var tx, ty;
         var background = canvas.getCanvasBackground();
-        var bgprop;
-        var bgELem = element[0].children[0];
-        for (bgprop in background) {
-          if (background.hasOwnProperty(bgprop)) {
-            bgELem.style[bgprop] = background[bgprop];
-          }
-        }
-
+        // var bgprop;
+        var bgELem = element.children(":first-child");
+        // bgELem.removeClass();
+        // bgELem.addClass(background);
+        element.removeClass();
+        element.addClass(background+" canvas");
+        // for (bgprop in background) {
+        //   if (background.hasOwnProperty(bgprop)) {
+        //     bgELem.style[bgprop] = background[bgprop];
+        //   }
+        // }
+        scope.fit = false;
         var outterTransform = function (){
           originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
           originarr = originstr.split(" ");
-          // scope.origin.left = parseFloat(originarr[0]);
-          // scope.origin.top = parseFloat(originarr[1]);
           var tleft = parseFloat(originarr[0]);
           var ttop = parseFloat(originarr[1]);
           if (slides.isCurrentSlide())
@@ -79,10 +77,11 @@ angular.module('slidesGeneratorApp')
           event.preventDefault();
           event.stopPropagation();
           console.log("mousewheel");
+          scope.fit = false;
           zoomToPoint(event.wheelDelta, event.clientX, event.clientY);
         }
         function zoomToPoint(d,x,y) {
-          scope.$broadcast("unselect-textbox");
+          scope.$emit("unselect-all-textbox");
           off = element.offset();
           ofx = off.left+canvas.getCanvasLeft();
           ofy = off.top+canvas.getCanvasTop();
@@ -110,17 +109,21 @@ angular.module('slidesGeneratorApp')
         }
         element.bind("mousedown", function(event){
           console.log("mousedown captured in canvas.js");
-          element.children("#mainCanvas").trigger("mousedown");
-          scope.dragScale = false;
-          $document.bind('mousemove', mousemove);
-          $document.bind('mouseup', mouseup);
+          // console.log("lock", scope.lock);
+          if (scope.lock===false) {
+            element.children("#mainCanvas").trigger("mousedown");
+            scope.dragScale = false;
+            $document.bind('mousemove', mousemove);
+            $document.bind('mouseup', mouseup);
+          }
+          $(".delete-btn").hide();
+          scope.$emit("unselect-all-text");
+          scope.$emit("unselect-all-image");
         });
         function mousemove(event){
           // console.log("mousemove in canvas.js");
           event.preventDefault();
           event.stopPropagation();
-          // scope.mainx = parseFloat(element.children("#mainCanvas").css("left"));
-          // scope.mainy = parseFloat(element.children("#mainCanvas").css("top"));
           canvas.setCanvasLeft(parseFloat(element.children("#mainCanvas").css("left")));
           canvas.setCanvasTop(parseFloat(element.children("#mainCanvas").css("top")));
           $("body").scope().$digest();
@@ -186,17 +189,8 @@ angular.module('slidesGeneratorApp')
           $("#mainCanvas").unbind("transitionend", endOfZoomOut);
         }
         scope.$watch(canvas.getCanvasBackground, function(newvalue){
-          bgELem.style = {
-            width: '100%',
-            height: '100%',
-            display: 'none',
-            position: 'absolute'
-          };
-          for (bgprop in background) {
-            if (background.hasOwnProperty(bgprop)) {
-              bgELem.style[bgprop] = background[bgprop];
-            }
-          }
+          element.removeClass();
+          element.addClass(newvalue + " canvas");
         });
         scope.$watch(canvas.getCanvasLeft, function(newvalue){
           // console.log("in watch f");
@@ -209,12 +203,14 @@ angular.module('slidesGeneratorApp')
         });
         function gohome(){
           var frame = slides.getMainFrame();
+          scope.fit = false;
           if (frame.w===0 || frame.h===0) return;
           moveToRec(frame.x, frame.y, frame.w, frame.h);
         }
         function moveto(i){
           if (i<0) return;
           console.log("in moveto "+i);
+          scope.fit = true;
           var si = slides.getSlideById(i);
           moveToRec(si.x, si.y, si.width, si.height);
         }
@@ -249,42 +245,35 @@ angular.module('slidesGeneratorApp')
           moveto(slides.getCurrentSlide().index);
         }
         scope.$on("newSlide", function(){
-          var afterZoom = function(){
+          // var afterZoom = function(){
             // console.log("in afterZoom");
             // var toolbar = $("#toolbar");
             // toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
             // toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
             // toolbar.show();
-            unbindZoomend();
-          };
-          var unbindZoomend = scope.$on("zoomend", afterZoom);
+            // unbindZoomend();
+          // };
+          // var unbindZoomend = scope.$on("zoomend", afterZoom);
           moveToCurrent();
         });
-        scope.$on("unselect-all-text", function(){
-          scope.$broadcast("unselect-textbox");
-        });
+
         scope.$on("unselect-all-image", function(){
-          scope.$broadcast("unselect-image");
+          // scope.$broadcast("unselect-image");
+          var slideNum = scope.slides.length, it, it2;
+          for (it = 0; it < slideNum; it++) {
+            var cnum = scope.slides[it].components.length;
+            for (it2 = 0; it2<cnum; it2++) {
+              scope.slides[it].components[it2].frameStyle.display = "none";
+            }
+          }
+          $("body").scope().$$phase || $("body").scope().$digest();
         });
         scope.$on("present", function(){
           // $("body").scope().$digest();
           var present = $window.open("presentation.html");
           present.onload = function(){
-            (present.document.getElementsByTagName("body")[0]).innerHTML = $('#main')[0].innerHTML;
-            // "<!doctype html>"+
-            // "<html>"+
-            // "  <head>"+
-            // "    <meta charset='utf-8'>"+
-            // "    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>"+
-            // "    <title>presentation</title>"+
-            // "    <meta name='description' content=''>"+
-            // "    <meta name='viewport' content='width=device-width'>"+
-            // "  </head>"+
-            // "  <body style='overflow:hidden;margin:0; padding:0;'>"+
-            // $('#main')[0].innerHTML+
-            // "  </body>"+
-            // "</html>";
-            // present.presentation();
+            (present.document.getElementsByTagName("body")[0]).innerHTML = $('#main')[0].innerHTML + 
+            "<script type='text/javascript'>prezi.init();</script>";
             present.prezi.init();
           };
         });
@@ -301,9 +290,6 @@ angular.module('slidesGeneratorApp')
           mainCanvas.css("left", 0);
           canvas.init();
         });
-        // if (slides.isCurrentSlide()) {
-        //   moveToCurrent();
-        // }
       }
     };
   }]);

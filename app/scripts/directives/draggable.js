@@ -8,15 +8,18 @@ angular.module('slidesGeneratorApp')
 				cursor: 'pointer'
 			});
 			element.bind('mousedown', function(event) {
-				console.log("mousedown");
+				// console.log("mousedown");
 				event.preventDefault();
         event.stopPropagation();
 				// prex = event.screenX-parseFloat(element.css("left"));
 				// prey = event.screenY-parseFloat(element.css("top"));
-				prex = event.screenX;
-				prey = event.screenY;
-				$document.bind('mousemove', mousemove);
-				$document.bind('mouseup', mouseup);
+				// console.log("lock", scope.lock);
+				if (scope.lock===false) {
+					prex = event.screenX;
+					prey = event.screenY;
+					$document.bind('mousemove', mousemove);
+					$document.bind('mouseup', mouseup);
+				}
 			});
 			function mousemove(event) {
 				// console.log("mousemove");

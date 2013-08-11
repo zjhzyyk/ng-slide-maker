@@ -24,8 +24,6 @@ angular.module('slidesGeneratorApp')
       this.selected = selected || false;
       this.x = 0;
       this.y = 0;
-      this.vx = 0;
-      this.vy = 0;
       this.width = 600;
       this.height = 450;
       this.textnum = 0;
@@ -38,7 +36,7 @@ angular.module('slidesGeneratorApp')
       this.background = "<div style='background-color: white; border: 1px solid rgba(0, 0, 0, .3); border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, .1);'></div>";
     }
     Slide.prototype.addTextBox = function (cx,cy, w, h){
-      console.log("add textbox in slide "+this.index);
+      // console.log("add textbox in slide "+this.index);
       cx = cx || 0;
       cy = cy || 0;
       // console.log("cx", cx, "cy", cy);
@@ -65,7 +63,7 @@ angular.module('slidesGeneratorApp')
       this.cnum++;
     };
     Slide.prototype.addImage = function(url, w, h) {
-      console.log("add image in slide "+this.index);
+      // console.log("add image in slide "+this.index);
       var that = this;
       this.components.push(new Component({
         type: "image",
@@ -161,6 +159,21 @@ angular.module('slidesGeneratorApp')
         slide.addTextBox((1-textboxWidthRatio)/2*slide.width, 0.065*slide.height, textboxWidthRatio*slide.width);
         slide.addTextBox((1-textboxWidthRatio)/2*slide.width, 0.065*slide.height+40, textboxWidthRatio*slide.width);
         slides.push(slide);
+      },
+      removeSlide: function(i){
+        if (i>=0 && i<slideNum()) {
+          slides.splice(i, 1);
+          for (var j = i; j<slideNum(); j++) {
+            slides[j].index = j;
+          }
+        }
+      },
+      removeComponent: function(s,c){
+        slides[s].components.splice(c,1);
+        for (var i = c; i<slides[s].components.length; i++) {
+          slides[s].components[i].id--;
+        }
+        slides[s].cnum--;
       },
       getAllSlides: function(){
         return slides;

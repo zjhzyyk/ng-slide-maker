@@ -5,15 +5,7 @@ angular.module('slidesGeneratorApp')
   	var canvas = {
       width: 0,
       height: 0,
-      background:{
-        // background: rgb(215, 215, 215);
-        // background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 500, from(rgb(240, 240, 240)), to(rgb(190, 190, 190)));
-        background: "-webkit-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190))"
-        // background:    -moz-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
-        // background:     -ms-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
-        // background:      -o-radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
-        // background:         radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
-      },
+      background: "theme-color-silver-blue",
       left: 0,
       top: 0,
       scale: 1

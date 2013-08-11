@@ -23,6 +23,7 @@ angular.module('slidesGeneratorApp')
 	    {
 	    	name:"slide",
 	    	click:function(){
+	    		$(".delete-btn").hide();
 	    		slides.addSlide();
 	    	}
 	   	},

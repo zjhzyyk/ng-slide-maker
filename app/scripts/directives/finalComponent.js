@@ -6,17 +6,20 @@ angular.module('slidesGeneratorApp')
       restrict: 'C',
       link: function postLink(scope, element, attrs) {
         // console.log("in final-component");
-        var c = slides.getSlideById(scope.slide.index).components[scope.component.id];
+        scope.c = slides.getSlideById(scope.slide.index).components[scope.component.id];
       	if (scope.component.type==="textbox") {
       		element[0].innerHTML = scope.component.content;
-      		scope.$watch("component.content", function(){
-            element[0].innerHTML = scope.component.content;
+      		scope.$watch("c.content", function(){
+            element[0].innerHTML = scope.c.content;
           });
       	}
-        angular.forEach(c.getStyle(), function(val, key){
+        else if (scope.component.type==="image") {
+          element[0].innerHTML = "<img src="+scope.c.content+">";
+        }
+        angular.forEach(scope.c.getStyle(), function(val, key){
           element.css(key, val);
         });
-        scope.$watch(c.getStyle, function(newvalue){
+        scope.$watch(scope.c.getStyle, function(newvalue){
           angular.forEach(newvalue, function(val, key){
             element.css(key, val);
           });

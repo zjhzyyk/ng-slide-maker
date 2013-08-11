@@ -14,16 +14,16 @@ angular.module('slidesGeneratorApp')
             // frame.contents().find('body').focus();
             // frame.css("width", scope.component.width+'px');
           // });
-          scope.$on("unselect-textbox", function(){
-            scope.component.frameStyle.display = "none";
-            $("body").scope().$$phase || $("body").scope().$digest();
+          // scope.$on("unselect-textbox", function(){
+            // scope.component.frameStyle.display = "none";
+            // $("body").scope().$$phase || $("body").scope().$digest();
             // frame.css("width", scope.component.width+'px');
-          });
+          // });
         } else if (scope.component.type==="image") {
-          scope.$on("unselect-image", function(){
-            scope.component.frameStyle.display = "none";
-            $("body").scope().$$phase || $("body").scope().$digest();
-          });
+          // scope.$on("unselect-image", function(){
+          //   scope.component.frameStyle.display = "none";
+          //   $("body").scope().$$phase || $("body").scope().$digest();
+          // });
         }
         var prex = 0, prey = 0, ci = 0;
         var coef = [

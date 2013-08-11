@@ -8,6 +8,7 @@ angular.module('slidesGeneratorApp')
       link: function postLink(scope, element, attrs) {
         var index = scope.slide.index;
         var offset;
+        // scope.slide.cselected = false;
         element.css({
         	left : scope.slide.x + "px",
         	top: scope.slide.y + "px",
@@ -18,8 +19,8 @@ angular.module('slidesGeneratorApp')
         //   e.preventDefault();
         //   e.stopPropagation();
         // });
-        element.children(".slide-background").children().remove();
-        element.children(".slide-background").append($(slides.getSlideById(index).background));
+        // element.children(".slide-background").children().remove();
+        // element.children(".slide-background").append($(slides.getSlideById(index).background));
         var afterZoom = function(){
           console.log("in empty afterZoom");
         };
@@ -28,53 +29,17 @@ angular.module('slidesGeneratorApp')
         }
         var unbindZoomend;
         element.mousedown(function(event){
-          console.log("select slide "+index);
-          event.preventDefault();
+          console.log("mousedown on slide "+scope.slide.index);
           event.stopPropagation();
-          move = false;
-          // if ($("body").scope().current !== scope.slides[index]) {
-          if (slides.getCurrentSlideId()!==index) {
-            movein = true;
-            select();
-            afterZoom = function(){
-              console.log("in afterZoom");
-              // $("body").scope().current.selected = true;
-              slides.getCurrentSlide().selected = true;
-              // scope.$emit("show-toolbar");
-              // var toolbar = $("#toolbar");
-              // toolbar[0].style.left = (parseFloat(slides.getCurrentSlide().style.left) + 70)+'px';
-              // toolbar[0].style.top = (parseFloat(slides.getCurrentSlide().style.top) - 55) + 'px';
-              // toolbar.show();
-              $("body").scope().$digest();
-              unbindZoomend();
-            };
-            unbindZoomend = scope.$on("zoomend", afterZoom);
-            scope.$emit("moveto", index);
+          $(".delete-btn").hide();
+          element.focus();
+          
+          if (scope.lock===false) {
+            move = false;
+            $document.bind('mousemove', mousemove);
+            $document.bind('mouseup', mouseup);
           }
-          else if (slides.getCurrentSlide().selected===false) {
-            movein = true;
-            slides.getCurrentSlide().selected = true;
-            $("body").scope().$digest();
-            scope.$emit("unselect-all-text");
-            scope.$emit("unselect-all-image");
-          }
-          $document.bind('mousemove', mousemove);
-          $document.bind('mouseup', mouseup);
         });
-        function select(mode){
-          slides.getCurrentSlide().selected = false;
-          // $("body").scope().current = scope.slides[index];
-          slides.setCurrentSlideId(index);
-          if (mode==="move") slides.getCurrentSlide().selected = true;
-          offset = element.offset();
-          var x = offset.left-$("#slideFrames").offset().left;
-          var y = offset.top-$("#slideFrames").offset().top;
-          scope.slide.style.left = x+'px';
-          scope.slide.style.top = y+'px';
-          scope.slide.style.width = scope.slide.width*canvas.getCanvasScale();
-          scope.slide.style.height = scope.slide.height*canvas.getCanvasScale();
-          $("body").scope().$digest();
-        }
         function mousemove(event){
           // console.log("moving slide "+index);
           event.preventDefault();
@@ -86,7 +51,6 @@ angular.module('slidesGeneratorApp')
           var y = position.top;
           scope.slide.x = parseFloat(element.css("left"));
           scope.slide.y = parseFloat(element.css("top"));
-          // console.log("slide "+index+" new x:"+x+" y:"+y);
           offset = element.offset();
           x = offset.left-$("#slideFrames").offset().left;
           y = offset.top-$("#slideFrames").offset().top;
@@ -98,21 +62,72 @@ angular.module('slidesGeneratorApp')
           };
           $("body").scope().$digest();
         }
+        function noComponentsSelected(){
+          var slideNum = scope.slides.length, it, it2, ret = true;
+          for (it = 0; it < slideNum; it++) {
+            var cnum = scope.slides[it].components.length;
+            for (it2 = 0; it2<cnum; it2++) {
+              if (scope.slides[it].components[it2].frameStyle.display === "block") {
+                ret = false;
+                break;
+              }
+            }
+            if (!ret) break;
+          }
+          if (ret) {
+            var ednum = tinymce.editors.length;
+            for (var ei = 0; ei<ednum; ei++) {
+              if (tinymce.editors[ei].state === 0 || tinymce.editors[ei].state===1)
+              {
+                ret  = false;
+                break;
+              }
+            }
+          }
+          return ret;
+        }
         function mouseup(event){
           event.preventDefault();
           event.stopPropagation();
-          if (move===false && slides.getCurrentSlideId()===index && movein===false) {
-            offset = element.offset();
-            var x = (event.clientX-offset.left)/canvas.getCanvasScale();
-            var y = (event.clientY-offset.top)/canvas.getCanvasScale();
-            // scope.slide.addTextBox(x, y);
-            slides.getSlideById(index).addTextBox(x, y);
-            $("body").scope().$digest();
-          }
           movein = false;
           $document.unbind('mousemove', mousemove);
           $document.unbind('mouseup', mouseup);
         }
+        element.mouseup(function(event){
+          var cselected = noComponentsSelected();
+          if (cselected===false) {
+            scope.$emit("unselect-all-text");
+            scope.$emit("unselect-all-image");
+          }
+          if ((slides.getCurrentSlideId()!==scope.slide.index || scope.fit === false) && move===false) {
+            movein = true;
+            slides.setCurrentSlideId(scope.slide.index);
+            scope.$emit("moveto", scope.slide.index);
+          }
+          if (move===false && slides.getCurrentSlideId()===scope.slide.index && movein===false && cselected===true) {
+            offset = element.offset();
+            var x = (event.clientX-offset.left)/canvas.getCanvasScale();
+            var y = (event.clientY-offset.top)/canvas.getCanvasScale();
+            slides.getSlideById(scope.slide.index).addTextBox(x, y);
+            $("body").scope().$digest();
+          }
+          movein = false;
+        });
+        element.children(".delete-btn").mousedown(function(e){
+          e.stopPropagation();
+          var s = slides.getSlideById(scope.slide.index);
+          var cnum = s.components.length;
+          for (var ci = 0; ci<cnum; ci++) {
+            tinymce.remove("#"+s.components[ci].textid);
+          }
+          slides.removeSlide(scope.slide.index);
+          scope.toggleDelBtn();
+          if (slides.slideNum()===0)
+            scope.clearSlides();
+          // else
+            // scope.$emit("moveto", scope.slide.index-1);
+          $("body").scope().$digest();
+        });
         scope.$watch("slide.width", function(){
           element.css("width", scope.slide.width+'px');
         });
@@ -125,15 +140,15 @@ angular.module('slidesGeneratorApp')
         scope.$watch("slide.y", function(){
           element.css("top", scope.slide.y+'px');
         });
-        scope.$watch("slide.imgnum", function(newvalue, oldvalue){
-          if (newvalue === oldvalue+1) {
-            slides.getCurrentSlide().selected = false;
-          }
-        });
-        scope.$watch(slides.getCurrentBackground, function(newvalue){
-          element.children(".slide-background").children().remove();
-          element.children(".slide-background").append($(newvalue));
-        });
+        // scope.$watch("slide.imgnum", function(newvalue, oldvalue){
+        //   if (newvalue === oldvalue+1) {
+        //     slides.getCurrentSlide().selected = false;
+        //   }
+        // });
+        // scope.$watch(slides.getCurrentBackground, function(newvalue){
+        //   element.children(".slide-background").children().remove();
+        //   element.children(".slide-background").append($(newvalue));
+        // });
         // scope.$watch(slides.getCurrentSlideId, function(newvalue){
         //   if (newvalue===index) {
         //     $("#"+scope.slide.toolbar)[0].style.display = "block";
@@ -144,19 +159,17 @@ angular.module('slidesGeneratorApp')
         //     // $("#toolbar").hide();
         //   // }
         // });
-        scope.$on("onOpen", function(){
-          if (index!==slides.getCurrentSlideId()) {
-            // $("#"+scope.slide.toolbar)[0].style.display = "none"; 
-            scope.slide.selected = false;
-          }
-        });
+        // scope.$on("onOpen", function(){
+        //   if (index!==slides.getCurrentSlideId()) {
+        //     // $("#"+scope.slide.toolbar)[0].style.display = "none"; 
+        //     scope.slide.selected = false;
+        //   }
+        // });
         offset = element.offset();
         var left = offset.left-$("#slideFrames").offset().left;
         var top = offset.top-$("#slideFrames").offset().top;
         scope.slide.style.left = left+'px';
         scope.slide.style.top = top+'px';
-        // function f(){scope.$emit("newSlide");}
-        // setTimeout(f, 0);
         $timeout(function () {
           if (slides.isAddingNewSlide()) {
             scope.$emit('newSlide');

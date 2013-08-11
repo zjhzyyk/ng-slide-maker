@@ -19,6 +19,7 @@ angular.module('slidesGeneratorApp')
       slides.getCurrentSlide().addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
       // $scope.current.addImage($scope.imageURL, $("#img-preview")[0].naturalWidth, $("#img-preview")[0].naturalHeight);
       $scope.closeAddImageModal();
+      $scope.$emit("unselect-all-text");
     };
     $scope.$on("openAddImageModal", $scope.openAddImageModal);
 	}]);

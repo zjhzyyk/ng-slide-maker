@@ -8,9 +8,11 @@ angular.module('slidesGeneratorApp')
         // console.log(scope.component.type);
         var text, editor, prev, textid, iframe, body, resizeLeft, resizeRight, c;
         c = slides.getSlideById(scope.slide.index).components[scope.component.id];
+        scope.$emit("unselect-all-text");
+        scope.$emit("unselect-all-image");
+        // scope.slide.cselected = false;
         if (scope.component.type==="textbox") {
-          scope.$emit("unselect-all-text");
-          textid = "slide"+scope.slide.index+"text"+scope.component.tid;
+          // textid = "slide"+scope.slide.index+"text"+scope.component.tid;
         	// text = $compile("<div ui-tinymce ng-model='tinymceModel'></div>")(scope);
           text = $compile("<div ui-tinymce></div>")(scope);
         	element.append(text);
@@ -58,21 +60,25 @@ angular.module('slidesGeneratorApp')
           element.append($("<img src='"+scope.component.content+"'>"));
           scope.component.frameStyle.width = (element[0].offsetWidth * canvas.getCanvasScale())+'px';
           scope.component.frameStyle.height = (element[0].offsetHeight * canvas.getCanvasScale())+'px';
+          // scope.component.frameStyle.display = "block";
           scope.$watch("component.width", function(){
-            element[0].firstChild.style.width = scope.component.width+'px';
+            if (element[0].firstChild.style) element[0].firstChild.style.width = scope.component.width+'px';
             scope.component.frameStyle.width = (scope.component.width * canvas.getCanvasScale())+'px';
           });
           scope.$watch("component.height", function(){
-            element[0].firstChild.style.height = scope.component.height+'px';
+            if (element[0].firstChild.style) element[0].firstChild.style.height = scope.component.height+'px';
             scope.component.frameStyle.height = (scope.component.height * canvas.getCanvasScale())+'px';
           });
           element.mousedown(function(event){
             event.preventDefault();
             event.stopPropagation();
             console.log("mousedown on component");
+            scope.$emit("unselect-all-text");
+            scope.$emit("unselect-all-image");
             // $("body").scope().current.selected = false;
             slides.getCurrentSlide().selected = false;
             scope.component.frameStyle.display = "block";
+            // scope.slide.cselected = true;
             $("body").scope().$digest();
           });
           scope.$watch("component.x", function(){
@@ -82,6 +88,23 @@ angular.module('slidesGeneratorApp')
             element[0].style.top = scope.component.y+'px';
           });
         }
+        element.mousedown(function(e){
+          e.stopPropagation();
+          $(".delete-btn").hide();
+          if (slides.getCurrentSlideId()!==scope.slide.index || scope.fit === false) {
+            scope.$emit("moveto", scope.slide.index);
+          }
+        });
+        element.children(".delete-btn").mouseup(function(e){
+          e.stopPropagation();
+          if (scope.component.textid) tinymce.remove("#"+scope.component.textid);
+          slides.removeComponent(scope.slide.index, scope.component.id);
+          $(".delete-btn").hide();
+          $("body").scope().$digest();
+        });
+        element.children(".delete-btn").mousedown(function(e){
+          e.stopPropagation();
+        })
         element[0].style.left = scope.component.x+'px';
         element[0].style.top = scope.component.y+'px';
       }
