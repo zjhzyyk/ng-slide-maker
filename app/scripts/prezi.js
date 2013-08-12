@@ -32,6 +32,7 @@ window.prezi = (function(document, window, undefined){
     if (change===undefined || change===true || change===null) canvas.scale *= ratio;
     var transform = "scale(" + canvas.scale + ") "+ translate;
     present.style.webkitTransform = transform;
+    present.style.MozTransform = transform;
     //after zooming finishes, bind back all zoom events
   }
   function zoomToRec(x,y,w,h) {

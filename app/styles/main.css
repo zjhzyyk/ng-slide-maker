@@ -49,6 +49,7 @@ ul {
 #mainCanvas {
 	-webkit-transition: -webkit-transform 0.5s linear;
 	-moz-transition: -moz-transform 0.5s linear;
+	-o-transition: -o-transform 0.5s linear;
 	-webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	margin: 0;

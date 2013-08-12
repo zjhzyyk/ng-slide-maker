@@ -43,30 +43,30 @@ angular.module('slidesGeneratorApp')
         // }
         scope.fit = false;
         var outterTransform = function (){
-          originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
-          originarr = originstr.split(" ");
-          var tleft = parseFloat(originarr[0]);
-          var ttop = parseFloat(originarr[1]);
-          if (slides.isCurrentSlide())
-            currentSlide = $(".slide[id="+slides.getCurrentSlide().index+"]");
-          else
-            currentSlide = null;
-          if (currentSlide!==null) {
-            node = element.find(".recli[id="+slides.getCurrentSlide().index+"]");
-            node.css("-webkit-transition", "all 0.5s linear");
-            position.left = tleft-(tleft-slides.getCurrentSlide().x)*canvas.getCanvasScale()+tx*canvas.getCanvasScale();
-            position.top = ttop-(ttop-slides.getCurrentSlide().y)*canvas.getCanvasScale()+ty*canvas.getCanvasScale();
-            newwidth = slides.getCurrentSlide().width*canvas.getCanvasScale();
-            newheight = slides.getCurrentSlide().height*canvas.getCanvasScale();
-            slides.getCurrentSlide().style = {
-              left: position.left+'px',
-              top: position.top+'px',
-              width: newwidth+'px',
-              height: newheight+'px'
-            };
-            $("body").scope().$$phase || $("body").scope().$digest();
-            node.bind("transitionend", removeTransition);
-          }
+          // originstr = element.children("#mainCanvas").css("-webkit-transform-origin");
+          // originarr = originstr.split(" ");
+          // var tleft = parseFloat(originarr[0]);
+          // var ttop = parseFloat(originarr[1]);
+          // if (slides.isCurrentSlide())
+          //   currentSlide = $(".slide[id="+slides.getCurrentSlide().index+"]");
+          // else
+          //   currentSlide = null;
+          // if (currentSlide!==null) {
+          //   node = element.find(".recli[id="+slides.getCurrentSlide().index+"]");
+          //   node.css("-webkit-transition", "all 0.5s linear");
+          //   position.left = tleft-(tleft-slides.getCurrentSlide().x)*canvas.getCanvasScale()+tx*canvas.getCanvasScale();
+          //   position.top = ttop-(ttop-slides.getCurrentSlide().y)*canvas.getCanvasScale()+ty*canvas.getCanvasScale();
+          //   newwidth = slides.getCurrentSlide().width*canvas.getCanvasScale();
+          //   newheight = slides.getCurrentSlide().height*canvas.getCanvasScale();
+          //   slides.getCurrentSlide().style = {
+          //     left: position.left+'px',
+          //     top: position.top+'px',
+          //     width: newwidth+'px',
+          //     height: newheight+'px'
+          //   };
+          //   $("body").scope().$$phase || $("body").scope().$digest();
+          //   node.bind("transitionend", removeTransition);
+          // }
         }
         var off;
         var ofx;
@@ -162,6 +162,7 @@ angular.module('slidesGeneratorApp')
           var transform = "scale(" + canvas.getCanvasScale() + ") "+ translate;
           // console.log(transform);
           document.getElementById("mainCanvas").style.webkitTransform = transform;
+          document.getElementById("mainCanvas").style.MozTransform = transform;
           $("#mainCanvas").bind("transitionend", endOfZoomIn);
         }
         function endOfZoomIn() {
@@ -284,8 +285,11 @@ angular.module('slidesGeneratorApp')
           // e.stopPropagation();
           e.preventDefault();
           mainCanvas.css("-webkit-transition", "none");
+          mainCanvas.css("-moz-transition", "none");
           mainCanvas.css("-webkit-transform", "none");
+          mainCanvas.css("-moz-transform", "none");
           mainCanvas.css("-webkit-transition", "-webkit-transform 0.5s linear");
+          mainCanvas.css("-moz-transition", "-moz-transform 0.5s linear");
           mainCanvas.css("top", 0);
           mainCanvas.css("left", 0);
           canvas.init();
